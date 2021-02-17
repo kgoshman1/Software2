@@ -1,5 +1,6 @@
 package view_controller;
 
+import com.sun.javafx.css.parser.Css2Bin;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,10 +12,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import jdk.jfr.StackTrace;
 import model.Customer;
 import util.dbConnection;
 import util.dbQuery;
-
+import view_controller.Add_Customer;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
@@ -34,6 +36,7 @@ public class Modify_Customer implements Initializable {
     @FXML private TableColumn<Customer,String> colUpdatedBy;
     @FXML private TableColumn<Customer,Integer> colDivisionID;
 
+    @FXML private TextField customerID;
     @FXML private TextField nameTF;
     @FXML private TextField addressTF;
     @FXML private TextField zipTF;
@@ -49,6 +52,10 @@ public class Modify_Customer implements Initializable {
     @FXML ObservableList<String> States = FXCollections.observableArrayList();
 
 
+    @FXML public static int customerToModify;
+
+
+    @FXML private int id;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -86,15 +93,18 @@ public class Modify_Customer implements Initializable {
         colLastUpdate.setCellValueFactory(new PropertyValueFactory<>("lastUpdate")); //8
         colUpdatedBy.setCellValueFactory(new PropertyValueFactory<>("updatedBy")); //9
         colDivisionID.setCellValueFactory(new PropertyValueFactory<>("divisionID")); //10
+
+
     }
 
     public void modifyCustomer() throws SQLException {
 
-        String insertStatement = ("INSERT INTO customers(Customer_Name, Address, Postal_Code, Phone, Create_Date, Created_By, Last_Update, Last_Updated_By, Division_ID) VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
-                "ON DUPLICATE KEY UPDATE Customer_ID = Customer_ID + 1");
+        String insertStatement = ("UPDATE customers SET Customer_Name = ?, Address = ?, Postal_Code = ?, Phone = ?, Create_Date = ?, Created_By = ?, Last_Update = ?, Last_Updated_By = ?, Division_ID = ? " +
+                "WHERE Customer_ID = ?");
         dbQuery.setPreparedStatement(dbConnection.conn, insertStatement, Statement.RETURN_GENERATED_KEYS);
         PreparedStatement ps = dbQuery.getPreparedStatement();
 
+        int customerid = Integer.parseInt(customerID.getText());
         String customerName = nameTF.getText();
         String customerAddress = addressTF.getText();
         String customerZip = zipTF.getText();
@@ -105,7 +115,7 @@ public class Modify_Customer implements Initializable {
         String updatedBy =  "Script";
         int divisionID = 60;
 
-
+        ps.setInt(10, customerid);
         ps.setString(1, customerName);
         ps.setString(2, customerAddress);
         ps.setString(3, customerZip);
@@ -127,6 +137,9 @@ public class Modify_Customer implements Initializable {
     }
 
 
+
+
+        // Saves user data after updating customer
     public void saveButton(javafx.event.ActionEvent event) throws IOException, SQLException {
         String nameTF2 = nameTF.getText();
         String addressTF2 = addressTF.getText();
@@ -151,6 +164,47 @@ public class Modify_Customer implements Initializable {
         }
     }
 
+    public void selectButton(javafx.event.ActionEvent event){
+        Customer customer = tableCustomer.getItems().get(tableCustomer.getSelectionModel().getSelectedIndex());
+
+        customerID.setText(String.valueOf(customer.getCustomerID()));
+        nameTF.setText(customer.getCustomersName());
+        addressTF.setText(customer.getCustomerAddress());
+        zipTF.setText(customer.getCustomerZip());
+        phoneTF.setText(customer.getCustomerPhone());
+
+    }
+
+    public void deleteButton(javafx.event.ActionEvent event) throws SQLException {
+        Customer customer = tableCustomer.getItems().get(tableCustomer.getSelectionModel().getSelectedIndex());
+
+        try{
+            PreparedStatement ps = dbConnection.conn.prepareStatement("DELETE FROM customers WHERE " +
+                    "Customer_ID = ?");
+            ps.setInt(1, customer.getCustomerID());
+            int result = ps.executeUpdate();
+
+            if (ps.getUpdateCount() > 0) {
+                System.out.println(ps.getUpdateCount() + " row(s) affected");
+
+                Parent parent = FXMLLoader.load(getClass().getResource("Main_Menu.fxml"));
+                Scene scene = new Scene(parent);
+                Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                window.setScene(scene);
+                window.show();
+            } else {
+                System.out.println("No change!");
+            }
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+    }
+
+
+
     /** Populates States ComboBox with state data */
     public void getStateCB() throws SQLException {
         Statement statement = dbConnection.conn.createStatement();
@@ -158,7 +212,6 @@ public class Modify_Customer implements Initializable {
         while (rs.next()) {
 
             States.add(rs.getString("Division"));
-            int getPrimary = rs.getInt("Division_ID");
             stateCB.setItems(States);
         }
     }

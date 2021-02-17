@@ -1,7 +1,5 @@
 package view_controller;
 
-import com.sun.javafx.beans.IDProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,15 +14,10 @@ import javafx.stage.Stage;
 import model.Customer;
 import util.dbConnection;
 import util.dbQuery;
-import java.lang.Object;
-import javax.swing.*;
-import java.awt.event.ActionEvent;
+
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.ResourceBundle;
 import java.sql.PreparedStatement;
@@ -47,7 +40,7 @@ public class Add_Customer implements Initializable {
 @FXML ObservableList<String> Countries = FXCollections.observableArrayList();
 @FXML ObservableList<String> States = FXCollections.observableArrayList();
 
-@FXML private ObservableList<Customer> list;
+@FXML private ObservableList<Customer> customerList;
 
 
 
@@ -64,8 +57,6 @@ public class Add_Customer implements Initializable {
 @FXML private TableColumn<Customer,Integer> colDivisionID;
 
 
-
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
@@ -79,7 +70,7 @@ public class Add_Customer implements Initializable {
     }
 
     private void populateTableView() throws SQLException, NullPointerException {
-        list = FXCollections.observableArrayList();
+        customerList = FXCollections.observableArrayList();
 
         String query = "SELECT * FROM customers";
         ResultSet rs = dbConnection.conn.createStatement().executeQuery(query);
@@ -87,12 +78,12 @@ public class Add_Customer implements Initializable {
 
         while (rs.next()) {
 
-            list.add(new Customer(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4)
+            customerList.add(new Customer(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4)
                     ,rs.getString(5),rs.getTimestamp(6),rs.getString(7),rs.getTimestamp(8),
                     rs.getString(9),rs.getInt(10)));
 
               tableCustomer.setItems(null);
-              tableCustomer.setItems(list);
+              tableCustomer.setItems(customerList);
           }
             colID.setCellValueFactory(new PropertyValueFactory<>("customerID")); //1
             colName.setCellValueFactory(new PropertyValueFactory<>("customersName")); //2
@@ -105,10 +96,6 @@ public class Add_Customer implements Initializable {
             colUpdatedBy.setCellValueFactory(new PropertyValueFactory<>("updatedBy")); //9
             colDivisionID.setCellValueFactory(new PropertyValueFactory<>("divisionID")); //10
         }
-
-
-
-
 
 
     public void addCustomer() throws SQLException {
@@ -175,19 +162,34 @@ public class Add_Customer implements Initializable {
         }
     }
 
+//    public void getStateCBUK(){
+//        States.add("Alberta");
+//        States.add("British Columbia");
+//        States.add("Manitoba");
+//        States.add("New Brunswick");
+//        States.add("Nova Scotia");
+//        States.add("Prince Edward Island");
+//        States.add("Ontario");
+//        States.add("Quebec");
+//        States.add("Saskatchewan");
+//        States.add("Nunavut");
+//    }
 
-    public void getStateCB() throws SQLException {
-        Statement statement = dbConnection.conn.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * FROM first_level_divisions");
-        while (rs.next()) {
 
-             States.add(rs.getString("Division"));
-             int getPrimary = rs.getInt("Division_ID");
-             stateCB.setItems(States);
+    public void getStateCB() throws NullPointerException, SQLException {
+        try {
+            Statement statement = dbConnection.conn.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT * FROM first_level_divisions "); //LIMIT 51
+            while (rs.next()) {
+                States.add(rs.getString("Division"));
+                stateCB.setItems(States);
+            }
+
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
     }
-
-    public void getCountryCB() throws SQLException {
+        public void getCountryCB() throws SQLException {
         Countries.add("United States");
         Countries.add("Canada");
         Countries.add("United Kingdom");
@@ -201,7 +203,6 @@ public class Add_Customer implements Initializable {
     }
 
 
-
     /** Main Menu.
      * Upon clicking the main menu button, user is returned to the "main-menu" screen;
      * @param event
@@ -213,7 +214,15 @@ public class Add_Customer implements Initializable {
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(scene);
         window.show();
+
     }
+
+
+
+    public ObservableList<Customer> getCustomerList(){
+        return customerList;
+    }
+
 
 
 

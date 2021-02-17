@@ -8,48 +8,37 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.Calendar;
 import model.Customer;
 import util.dbConnection;
+import util.dbQuery;
 
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 public class Add_Appointment implements Initializable {
-    @FXML Button home;
-    @FXML Button saveButton;
+    @FXML
+    Button home;
+    @FXML
+    Button saveButton;
 
-    @FXML
-    TextField appointmentID;
-    @FXML
-    TextField title;
-    @FXML
-    TextField description;
-    @FXML
-    TextField location;
-    @FXML
-    TextField contact;
-    @FXML
-    TextField type;
-    @FXML
-    TextField startDate;
-    @FXML
-    TextField endDate;
-    @FXML
-    TextField customerID;
-    @FXML
-    TextField userID;
+    @FXML TextField appointmentIDTF;
+    @FXML TextField titleTF;
+    @FXML TextField descriptionTF;
+    @FXML TextField locationTF;
+    @FXML TextField contactTF;
+    @FXML TextField typeTF;
+    @FXML TextField startDateTF;
+    @FXML TextField endDateTF;
+    @FXML TextField customerIDTF;
+    @FXML TextField userIDTF;
 
     @FXML
     private TableView<Calendar> tableCalendar;
@@ -109,6 +98,87 @@ public class Add_Appointment implements Initializable {
         colID.setCellValueFactory(new PropertyValueFactory<>("customerID")); //8
 
     }
+
+    private void addAppointment() throws SQLException {
+
+        String insertStatement = ("INSERT INTO appointments(Appointment_ID, Title, Description, Location, Type, Start, End, Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?) " +
+                "ON DUPLICATE KEY UPDATE Customer_ID = Customer_ID + 1");
+        dbQuery.setPreparedStatement(dbConnection.conn, insertStatement, Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement ps = dbQuery.getPreparedStatement();
+
+
+        //Todo CHECK THE STRING/INT OF THESE
+        String appointmentID = appointmentIDTF.getText();
+        String title = titleTF.getText();
+        String description = descriptionTF.getText();
+        String location = locationTF.getText();
+        Timestamp contact = getCurrentTime();
+        String type = null;
+        Timestamp startDate = getCurrentTime();
+        String endDate = null;
+        int customerID = 60;
+        int userID = 0;
+
+        //TODO CHECK THE STRING/INTO OF THESE
+        ps.setString(1, appointmentID);
+        ps.setString(2, title);
+        ps.setString(3, description);
+        ps.setString(4, location);
+        ps.setTimestamp(5, contact);
+        ps.setString(6, type);
+        ps.setTimestamp(7, startDate);
+        ps.setString(8, endDate);
+        ps.setInt(9, customerID);
+        ps.setInt(10, userID);
+
+        ps.execute();
+
+        //Outputs if update was successful
+        if (ps.getUpdateCount() > 0) {
+            System.out.println(ps.getUpdateCount() + " row(s) affected");
+        } else {
+            System.out.println("No change!");
+        }
+    }
+
+//}
+
+    public void saveButton(javafx.event.ActionEvent event) throws IOException, SQLException {
+        String appointmentID2 = appointmentIDTF.getText();
+        String title2 = titleTF.getText();
+        String description2 = descriptionTF.getText();
+        String location2 = locationTF.getText();
+        String contact2 = contactTF.getText();
+        String start2 = startDateTF.getText();
+        String end2= endDateTF.getText();
+        String customer2 = customerIDTF.getText();
+        String user2 = userIDTF.getText();
+        String type2 = typeTF.getText();
+
+
+        if (appointmentID2.equals("") || title2.equals("") || description2.equals("") || location2.equals("") ||
+                contact2.equals("") || start2.equals("") || end2.equals("") || customer2.equals("") || user2.equals("")
+                || type2.equals("")) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "All fields must be filled out in order to save");
+            alert.showAndWait();
+        } else {
+
+            addAppointment();
+
+            Parent parent = FXMLLoader.load(getClass().getResource("Main_Menu.fxml"));
+            Scene scene = new Scene(parent);
+            Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            window.setScene(scene);
+            window.show();
+
+        }
+    }
+
+        /** Returns Current Time and Date */
+        public Timestamp getCurrentTime(){
+            java.util.Date date = new Date();
+            return new Timestamp(date.getTime());
+        }
 
                     /** Takes user to Main Menu Screen */
         public void mainMenu (javafx.event.ActionEvent event) throws IOException {

@@ -4,16 +4,14 @@ package view_controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.Calendar;
@@ -23,12 +21,14 @@ import util.dbConnection.*;
 
 import javax.swing.plaf.nimbus.State;
 import javax.xml.transform.Result;
+import java.beans.EventHandler;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import main.Main;
@@ -61,19 +61,17 @@ public class Main_Menu implements Initializable {
     }
 
 
-
     private void populateTableView() throws SQLException, NullPointerException {
         list = FXCollections.observableArrayList();
 
         String query = "SELECT * FROM appointments";
         ResultSet rs = dbConnection.conn.createStatement().executeQuery(query);
-        System.out.println("NICE");
 
         while (rs.next()) {
 
             list.add(new Calendar(rs.getInt(1),rs.getString(2),rs.getString(3),
                             rs.getString(4),rs.getString(5),rs.getTimestamp(6),
-                            rs.getTimestamp(7),rs.getInt(8)));
+                            rs.getTimestamp(7),rs.getInt(12)));
 
 
 
@@ -88,7 +86,11 @@ public class Main_Menu implements Initializable {
         colStart.setCellValueFactory(new PropertyValueFactory<>("start")); //6
         colEnd.setCellValueFactory(new PropertyValueFactory<>("end")); //7
         colID.setCellValueFactory(new PropertyValueFactory<>("customerID")); //8
+
+
     }
+
+
 
          /************BELOW ARE THE SCREENS VIEWS ******************/
     public void addAppointment(javafx.event.ActionEvent event) throws IOException {
