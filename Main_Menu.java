@@ -3,6 +3,7 @@ package view_controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -24,17 +25,18 @@ import javax.xml.transform.Result;
 import java.beans.EventHandler;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import main.Main;
+import util.dbQuery;
 
 
 public class Main_Menu implements Initializable {
+
     @FXML private TableView<Calendar> tableCalendar;
     @FXML private TableColumn<Calendar, Integer> colAppt;
     @FXML private TableColumn<Calendar, String> colTitle;
@@ -45,9 +47,9 @@ public class Main_Menu implements Initializable {
     @FXML private TableColumn<Calendar, Integer> colEnd;
     @FXML private TableColumn<Calendar, Integer> colID;
 
+    @FXML private final DateTimeFormatter dateTimeDTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    @FXML private ObservableList<Calendar> list = FXCollections.observableArrayList();;
-
+    @FXML private ObservableList<Calendar> list = FXCollections.observableArrayList();
 
 
 
@@ -60,6 +62,28 @@ public class Main_Menu implements Initializable {
         }
     }
 
+            //TODO TAKE CARE OF THIS ONE
+    public void FilterAppointmentByWeek(ObservableList appointments){
+        LocalDate now = LocalDate.now();
+        LocalDate nowPlusWeek = now.plusWeeks(1);
+
+        FilteredList<Calendar> filteredList = new FilteredList<>(appointments);
+        filteredList.setPredicate(row -> {
+
+            LocalDate rowDate = LocalDate.parse((CharSequence) row.getStart(), dateTimeDTF);
+            return rowDate.isAfter(now.minusDays(1)) && rowDate.isBefore(nowPlusWeek);
+        });
+        tableCalendar.setItems(filteredList);
+    };
+
+    public void weeklyCalendarFilter(javafx.event.ActionEvent event){
+        FilterAppointmentByWeek(list);
+    }
+
+
+
+
+
 
     private void populateTableView() throws SQLException, NullPointerException {
         list = FXCollections.observableArrayList();
@@ -71,7 +95,7 @@ public class Main_Menu implements Initializable {
 
             list.add(new Calendar(rs.getInt(1),rs.getString(2),rs.getString(3),
                             rs.getString(4),rs.getString(5),rs.getTimestamp(6),
-                            rs.getTimestamp(7),rs.getInt(12)));
+                            rs.getTimestamp(7),rs.getInt(10),rs.getInt(12),rs.getString(13)));
 
 
 
@@ -87,12 +111,11 @@ public class Main_Menu implements Initializable {
         colEnd.setCellValueFactory(new PropertyValueFactory<>("end")); //7
         colID.setCellValueFactory(new PropertyValueFactory<>("customerID")); //8
 
-
     }
 
 
 
-         /************BELOW ARE THE SCREENS VIEWS ******************/
+    /************BELOW ARE THE SCREENS VIEWS ******************/
     public void addAppointment(javafx.event.ActionEvent event) throws IOException {
         Parent parent = FXMLLoader.load(getClass().getResource("Add_Appointment.fxml"));
         Scene scene = new Scene(parent);

@@ -1,15 +1,9 @@
 package model;
 
 import javafx.beans.property.*;
-import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import java.sql.Timestamp;
+import javafx.collections.ObservableList;
 
-import java.sql.Time;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.sql.Timestamp;
 
 public class Calendar {
 
@@ -21,9 +15,11 @@ public class Calendar {
     private final ObjectProperty<Timestamp> start;
     private final ObjectProperty<Timestamp> end;
     private final IntegerProperty customerID;
+    private final IntegerProperty userID;
+    private final StringProperty contact;
 
     public Calendar(int appointmentID, String title, String description, String location, String type,
-                    Timestamp start, Timestamp end, int customerID){
+                    Timestamp start, Timestamp end, int customerID, int userID, String contact){
         this.appointmentID = new SimpleIntegerProperty(appointmentID);
         this.title = new SimpleStringProperty(title);
         this.description = new SimpleStringProperty(description);
@@ -32,6 +28,8 @@ public class Calendar {
         this.start = new SimpleObjectProperty<>(start);
         this.end = new SimpleObjectProperty<>(end);
         this.customerID = new SimpleIntegerProperty(customerID);
+        this.userID = new SimpleIntegerProperty(userID);
+        this.contact = new SimpleStringProperty(contact);
     }
 
     public int getAppointmentID() {
@@ -128,6 +126,32 @@ public class Calendar {
 
     public void setCustomerID(int customerID) {
         this.customerID.set(customerID);
+    }
+
+
+    public int getUserID() {
+        return userID.get();
+    }
+
+    public IntegerProperty userIDProperty() {
+        return userID;
+    }
+
+    public void setUserID(int userID) {
+        this.userID.set(userID);
+    }
+
+
+    public String getContact() {
+        return contact.get();
+    }
+
+    public StringProperty contactProperty() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact.set(contact);
     }
 
 

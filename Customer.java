@@ -2,12 +2,10 @@ package model;
 
 import javafx.beans.property.*;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableColumn;
 
 import java.net.URL;
-import java.sql.Time;
+import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
 /** Customer Class */
@@ -40,7 +38,21 @@ public class Customer implements Initializable {
    }
 
 
-        /** Customer Getters and Setters */
+    public Customer(IntegerProperty customerID, StringProperty customersName, StringProperty customerAddress, StringProperty customerZip, StringProperty customerPhone, ObjectProperty<Timestamp> customerCreatedDate, StringProperty createdBy, ObjectProperty<Timestamp> lastUpdate, StringProperty updatedBy, IntegerProperty divisionID) {
+        this.customerID = customerID;
+        this.customersName = customersName;
+        this.customerAddress = customerAddress;
+        this.customerZip = customerZip;
+        this.customerPhone = customerPhone;
+        this.customerCreatedDate = customerCreatedDate;
+        this.createdBy = createdBy;
+        this.lastUpdate = lastUpdate;
+        this.updatedBy = updatedBy;
+        this.divisionID = divisionID;
+    }
+
+    /** Customer Getters and Setters
+     * @return*/
 
            //CUSTOMER ID
     public int getCustomerID() {
@@ -115,7 +127,7 @@ public class Customer implements Initializable {
     }
 
 
-         //CUSTOMER CREATED DATE
+             //CUSTOMER CREATED DATE
     public Timestamp getCustomerCreatedDate() {
         return customerCreatedDate.get();
     }
@@ -171,9 +183,9 @@ public class Customer implements Initializable {
     }
 
 
-    //CUSTOMER ID
-    public int getDivisionID() {
-        return divisionID.get();
+            //CUSTOMER ID
+    public String getDivisionID() {
+        return String.valueOf(divisionID.get());
     }
 
     public void setDivisionID(int value) {
@@ -189,8 +201,4 @@ public class Customer implements Initializable {
 
     }
 
-//    @Override
-//    public void initialize(URL url, ResourceBundle resourceBundle) {
-//        idTC.setCellValueFactory(cellData -> cellData.getValue().getCustomerID();
-//    }
 }

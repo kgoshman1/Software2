@@ -12,7 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.Calendar;
-import model.Customer;
 import util.dbConnection;
 import util.dbQuery;
 
@@ -33,12 +32,12 @@ public class Add_Appointment implements Initializable {
     @FXML TextField titleTF;
     @FXML TextField descriptionTF;
     @FXML TextField locationTF;
-    @FXML TextField contactTF;
     @FXML TextField typeTF;
     @FXML TextField startDateTF;
     @FXML TextField endDateTF;
     @FXML TextField customerIDTF;
     @FXML TextField userIDTF;
+    @FXML ComboBox<String> contactCB;
 
     @FXML
     private TableView<Calendar> tableCalendar;
@@ -58,14 +57,21 @@ public class Add_Appointment implements Initializable {
     private TableColumn<Calendar, Integer> colEnd;
     @FXML
     private TableColumn<Calendar, Integer> colID;
+    @FXML
+    private TableColumn<Calendar, Integer> colUserID;
+    @FXML
+    private TableColumn<Calendar, String > colContact;
 
     @FXML
-    private ObservableList<Calendar> list = FXCollections.observableArrayList();
+    public ObservableList<Calendar> list = FXCollections.observableArrayList();
+    public ObservableList<String>contacts = FXCollections.observableArrayList();
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
             populateTableView();
+            addContacts();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -82,7 +88,7 @@ public class Add_Appointment implements Initializable {
 
             list.add(new Calendar(rs.getInt(1), rs.getString(2), rs.getString(3),
                     rs.getString(4), rs.getString(5), rs.getTimestamp(6),
-                    rs.getTimestamp(7), rs.getInt(8)));
+                    rs.getTimestamp(7), rs.getInt(12),rs.getInt(13), rs.getString(14)));
 
 
             tableCalendar.setItems(null);
@@ -96,41 +102,50 @@ public class Add_Appointment implements Initializable {
         colStart.setCellValueFactory(new PropertyValueFactory<>("start")); //6
         colEnd.setCellValueFactory(new PropertyValueFactory<>("end")); //7
         colID.setCellValueFactory(new PropertyValueFactory<>("customerID")); //8
+        colUserID.setCellValueFactory(new PropertyValueFactory<>("userID"));
+        colContact.setCellValueFactory(new PropertyValueFactory<>("contact"));
 
     }
 
-    private void addAppointment() throws SQLException {
+    public void addAppointment() throws SQLException {
 
-        String insertStatement = ("INSERT INTO appointments(Appointment_ID, Title, Description, Location, Type, Start, End, Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?) " +
-                "ON DUPLICATE KEY UPDATE Customer_ID = Customer_ID + 1");
+        String insertStatement = ("INSERT INTO appointments(Title, Description, Location, Type, Start, End," +
+                " Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) " +
+                "VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         dbQuery.setPreparedStatement(dbConnection.conn, insertStatement, Statement.RETURN_GENERATED_KEYS);
         PreparedStatement ps = dbQuery.getPreparedStatement();
 
 
-        //Todo CHECK THE STRING/INT OF THESE
-        String appointmentID = appointmentIDTF.getText();
         String title = titleTF.getText();
         String description = descriptionTF.getText();
         String location = locationTF.getText();
-        Timestamp contact = getCurrentTime();
-        String type = null;
-        Timestamp startDate = getCurrentTime();
-        String endDate = null;
-        int customerID = 60;
-        int userID = 0;
+        String type = typeTF.getText() ;
+        Timestamp start = getCurrentTime();
+        Timestamp end = getCurrentTime();
+        int customerID = Integer.parseInt(customerIDTF.getText()) ;
+        int userID = Integer.parseInt(userIDTF.getText());
 
-        //TODO CHECK THE STRING/INTO OF THESE
-        ps.setString(1, appointmentID);
-        ps.setString(2, title);
-        ps.setString(3, description);
-        ps.setString(4, location);
-        ps.setTimestamp(5, contact);
-        ps.setString(6, type);
-        ps.setTimestamp(7, startDate);
-        ps.setString(8, endDate);
-        ps.setInt(9, customerID);
-        ps.setInt(10, userID);
 
+
+        ps.setString(1, title); //2
+        ps.setString(2, description); //3
+        ps.setString(3, location); //4
+        ps.setString(4, type); //5
+        ps.setTimestamp(5, start); //6
+        ps.setTimestamp(6, end); //7
+        ps.setTimestamp(7, getCurrentTime()); //8
+        ps.setString(8,"Kyle"); //9
+        ps.setTimestamp(9, getCurrentTime()); //10
+        ps.setString(10, "Kyle"); //11
+        ps.setInt(11, customerID); //12
+        ps.setInt(12, userID); //13
+        if (contactCB.getValue().equals("Anika Costa")) {
+            ps.setInt(13, 1);
+        } else if (contactCB.getValue().equals("Daniel Garcia")) {
+            ps.setInt(13, 2);
+        } else if (contactCB.getValue().equals("Li Lee")) {
+            ps.setInt(13, 3);
+        }
         ps.execute();
 
         //Outputs if update was successful
@@ -141,24 +156,23 @@ public class Add_Appointment implements Initializable {
         }
     }
 
-//}
-
     public void saveButton(javafx.event.ActionEvent event) throws IOException, SQLException {
-        String appointmentID2 = appointmentIDTF.getText();
+        String appointment2 = appointmentIDTF.getText();
         String title2 = titleTF.getText();
         String description2 = descriptionTF.getText();
         String location2 = locationTF.getText();
-        String contact2 = contactTF.getText();
-        String start2 = startDateTF.getText();
-        String end2= endDateTF.getText();
-        String customer2 = customerIDTF.getText();
-        String user2 = userIDTF.getText();
         String type2 = typeTF.getText();
+        String start2 = startDateTF.getText();
+        String end2 = endDateTF.getText();
+        String customerID2 = customerIDTF.getText();
+        String userID2 = userIDTF.getText();
 
 
-        if (appointmentID2.equals("") || title2.equals("") || description2.equals("") || location2.equals("") ||
-                contact2.equals("") || start2.equals("") || end2.equals("") || customer2.equals("") || user2.equals("")
-                || type2.equals("")) {
+
+
+        if (appointment2.equals("") || title2.equals("") || description2.equals("") || location2.equals("")
+                || type2.equals("") || start2.equals("") || end2.equals("") || customerID2.equals("")
+                || userID2.equals("")){
             Alert alert = new Alert(Alert.AlertType.ERROR, "All fields must be filled out in order to save");
             alert.showAndWait();
         } else {
@@ -173,6 +187,18 @@ public class Add_Appointment implements Initializable {
 
         }
     }
+
+
+
+    public void addContacts(){
+
+        contacts.add("Anika Costa");
+        contacts.add("Daniel Garcia");
+        contacts.add("Li Lee");
+
+        contactCB.setItems(contacts);
+    }
+
 
         /** Returns Current Time and Date */
         public Timestamp getCurrentTime(){

@@ -15,6 +15,7 @@ import model.Customer;
 import util.dbConnection;
 import util.dbQuery;
 
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
@@ -39,10 +40,10 @@ public class Add_Customer implements Initializable {
 @FXML ObservableList<Customer> customers;
 @FXML ObservableList<String> Countries = FXCollections.observableArrayList();
 @FXML ObservableList<String> States = FXCollections.observableArrayList();
+@FXML ObservableList<String> Provinces = FXCollections.observableArrayList();
+@FXML ObservableList<String> Territories = FXCollections.observableArrayList();
 
 @FXML private ObservableList<Customer> customerList;
-
-
 
 @FXML private TableView<Customer> tableCustomer;
 @FXML private TableColumn<Customer,Integer> colID;
@@ -60,7 +61,6 @@ public class Add_Customer implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            getStateCB();
             getCountryCB();
             populateTableView();
         } catch (SQLException e) {
@@ -74,7 +74,6 @@ public class Add_Customer implements Initializable {
 
         String query = "SELECT * FROM customers";
         ResultSet rs = dbConnection.conn.createStatement().executeQuery(query);
-        System.out.println("NICE");
 
         while (rs.next()) {
 
@@ -115,7 +114,6 @@ public class Add_Customer implements Initializable {
         String updatedBy =  "Script";
         int divisionID = 60;
 
-
         ps.setString(1, customerName);
         ps.setString(2, customerAddress);
         ps.setString(3, customerZip);
@@ -124,8 +122,149 @@ public class Add_Customer implements Initializable {
         ps.setString(6, createdBy);
         ps.setTimestamp(7, lastUpdate);
         ps.setString(8, updatedBy);
-        ps.setInt(9, divisionID);
+        //ps.setInt(9, divisionID);
+        if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Alabama")) {
+            ps.setInt(9, 1);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Arizona")) {
+            ps.setInt(9, 2);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Arkansas")) {
+            ps.setInt(9, 3);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("California")) {
+            ps.setInt(9, 4);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Colorado")) {
+            ps.setInt(9, 5);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Connecticut")) {
+            ps.setInt(9, 6);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Delaware")) {
+            ps.setInt(9, 7);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("District of Columbia")) {
+            ps.setInt(9, 8);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Florida")) {
+            ps.setInt(9, 9);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Georgia")) {
+            ps.setInt(9, 10);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Idaho")) {
+            ps.setInt(9, 11);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Illinois")) {
+            ps.setInt(9, 12);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Indiana")) {
+            ps.setInt(9, 13);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Iowa")) {
+            ps.setInt(9, 14);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Kansas")) {
+            ps.setInt(9, 15);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Kentucky")) {
+            ps.setInt(9, 16);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Louisiana")) {
+            ps.setInt(9, 17);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Maine")) {
+            ps.setInt(9, 18);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Maryland")) {
+            ps.setInt(9, 19);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Massachusets")) {
+            ps.setInt(9, 20);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Michigan")) {
+            ps.setInt(9, 21);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Minnesota")) {
+            ps.setInt(9, 22);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Mississippi")) {
+            ps.setInt(9, 23);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Missouri")) {
+            ps.setInt(9, 24);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Montana")) {
+            ps.setInt(9, 25);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Nebraska")) {
+            ps.setInt(9, 26);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Nevada")) {
+            ps.setInt(9, 27);
+        } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("New Hampshire")) {
+            ps.setInt(9, 28);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("New Jersey")) {
+            ps.setInt(9, 29);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("New Mexico")) {
+            ps.setInt(9, 30);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("New York")) {
+            ps.setInt(9, 31);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("North Carolina")) {
+            ps.setInt(9, 32);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("North Dakota")) {
+            ps.setInt(9, 33);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Ohio")) {
+            ps.setInt(9, 34);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Oklahoma")) {
+            ps.setInt(9, 35);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Oregon")) {
+            ps.setInt(9, 36);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Pennsylvania")) {
+            ps.setInt(9, 37);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Rhode Island")) {
+            ps.setInt(9, 38);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("South Carolina")) {
+            ps.setInt(9, 39);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("South Dakota")) {
+            ps.setInt(9, 40);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Tennessee")) {
+            ps.setInt(9, 41);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Texas")) {
+            ps.setInt(9, 42);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Utah")) {
+            ps.setInt(9, 43);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Vermont")) {
+            ps.setInt(9, 44);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Virginia")) {
+            ps.setInt(9, 45);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Washington")) {
+            ps.setInt(9, 46);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("West Virginia")) {
+            ps.setInt(9, 47);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Wisconsin")) {
+            ps.setInt(9, 48);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Wyoming")) {
+            ps.setInt(9, 49);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Hawaii")) {
+            ps.setInt(9, 52);
+        }else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Alaska")) {
+            ps.setInt(9, 54);
 
+                            /* END OF UNITED STATES - BEGINNING OF CANADA */
+
+        }else if (countryCB.getValue().equals("Canada") && stateCB.getValue().equals("Northwest Territories")) {
+            ps.setInt(9, 60);
+        } else if (countryCB.getValue().equals("Canada") && stateCB.getValue().equals("Alberta")) {
+            ps.setInt(9, 61);
+        } else if (countryCB.getValue().equals("Canada") && stateCB.getValue().equals("British Columbia")) {
+            ps.setInt(9, 62);
+        } else if (countryCB.getValue().equals("Canada") && stateCB.getValue().equals("Manitoba")) {
+            ps.setInt(9, 63);
+        } else if (countryCB.getValue().equals("Canada") && stateCB.getValue().equals("New Brunswick")) {
+            ps.setInt(9, 64);
+        } else if (countryCB.getValue().equals("Canada") && stateCB.getValue().equals("Nova Scotia")) {
+            ps.setInt(9, 65);
+        } else if (countryCB.getValue().equals("Canada") && stateCB.getValue().equals("Prince Edward Island")) {
+            ps.setInt(9, 66);
+        } else if (countryCB.getValue().equals("Canada") && stateCB.getValue().equals("Ontario")) {
+            ps.setInt(9, 67);
+        } else if (countryCB.getValue().equals("Canada") && stateCB.getValue().equals("Québec")) {
+            ps.setInt(9, 68);
+        } else if (countryCB.getValue().equals("Canada") && stateCB.getValue().equals("Saskatchewan")) {
+            ps.setInt(9, 69);
+        } else if (countryCB.getValue().equals("Canada") && stateCB.getValue().equals("Nunavut")) {
+            ps.setInt(9, 70);
+        } else if (countryCB.getValue().equals("Canada") && stateCB.getValue().equals("Yukon")) {
+            ps.setInt(9, 71);
+        } else if (countryCB.getValue().equals("Canada") && stateCB.getValue().equals("Newfoundland and Labrador")) {
+            ps.setInt(9, 72);
+
+                    /* END OF CANADA - BEGINNING OF UNITED KINGDOM */
+        } else if (countryCB.getValue().equals("United Kingdom") && stateCB.getValue().equals("England")) {
+            ps.setInt(9, 101);
+        } else if (countryCB.getValue().equals("United Kingdom") && stateCB.getValue().equals("Wales")) {
+            ps.setInt(9, 102);
+        } else if (countryCB.getValue().equals("United Kingdom") && stateCB.getValue().equals("Scotland")) {
+            ps.setInt(9, 103);
+        } else if (countryCB.getValue().equals("United Kingdom") && stateCB.getValue().equals("Northern Ireland")) {
+            ps.setInt(9, 104);
+        }
         ps.execute();
 
         //Outputs if update was successful
@@ -158,38 +297,64 @@ public class Add_Customer implements Initializable {
             Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
             window.setScene(scene);
             window.show();
-
         }
     }
 
-//    public void getStateCBUK(){
-//        States.add("Alberta");
-//        States.add("British Columbia");
-//        States.add("Manitoba");
-//        States.add("New Brunswick");
-//        States.add("Nova Scotia");
-//        States.add("Prince Edward Island");
-//        States.add("Ontario");
-//        States.add("Quebec");
-//        States.add("Saskatchewan");
-//        States.add("Nunavut");
-//    }
 
-
-    public void getStateCB() throws NullPointerException, SQLException {
+    public void getStateCBUS() throws NullPointerException, SQLException {
         try {
             Statement statement = dbConnection.conn.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT * FROM first_level_divisions "); //LIMIT 51
+            ResultSet rs = statement.executeQuery("SELECT * FROM first_level_divisions LIMIT 51");
             while (rs.next()) {
                 States.add(rs.getString("Division"));
                 stateCB.setItems(States);
             }
-
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
     }
-        public void getCountryCB() throws SQLException {
+
+    public void getStateCBCA() throws NullPointerException, SQLException {
+        try {
+            Statement statement = dbConnection.conn.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT * FROM first_level_divisions LIMIT 51, 13");
+            while (rs.next()) {
+                Provinces.add(rs.getString("Division"));
+                stateCB.setItems(Provinces);
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getStateCBUK() throws NullPointerException, SQLException {
+        try {
+            Statement statement = dbConnection.conn.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT * FROM first_level_divisions LIMIT 64, 4");
+            while (rs.next()) {
+                Territories.add(rs.getString("Division"));
+                stateCB.setItems(Territories);
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void checkCountry(javafx.event.ActionEvent event) throws SQLException {
+
+        if (countryCB.getSelectionModel().getSelectedItem().equals("United States")){
+            getStateCBUS();
+            System.out.println("Returning US States");
+        } else if (countryCB.getSelectionModel().getSelectedItem().equals("Canada")){
+            getStateCBCA();
+            System.out.println("Returning Canadian Provinces");
+        } else if (countryCB.getSelectionModel().getSelectedItem().equals("United Kingdom")){
+            getStateCBUK();
+            System.out.println("Returning UK Territories");
+        }
+    }
+
+    public void getCountryCB() throws SQLException {
         Countries.add("United States");
         Countries.add("Canada");
         Countries.add("United Kingdom");
@@ -218,10 +383,6 @@ public class Add_Customer implements Initializable {
     }
 
 
-
-    public ObservableList<Customer> getCustomerList(){
-        return customerList;
-    }
 
 
 
