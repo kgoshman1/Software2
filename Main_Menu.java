@@ -27,10 +27,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.spi.CalendarNameProvider;
+
 import main.Main;
 import util.dbQuery;
 
@@ -47,10 +50,11 @@ public class Main_Menu implements Initializable {
     @FXML private TableColumn<Calendar, Integer> colEnd;
     @FXML private TableColumn<Calendar, Integer> colID;
 
-    @FXML private final DateTimeFormatter dateTimeDTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    @FXML private final DateTimeFormatter dateTimeDTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
 
     @FXML private ObservableList<Calendar> list = FXCollections.observableArrayList();
-
+    @FXML private ObservableList<Calendar> list2 = FXCollections.observableArrayList();
+    @FXML private ObservableList<Calendar> timeList = FXCollections.observableArrayList();
 
 
     @Override
@@ -62,27 +66,37 @@ public class Main_Menu implements Initializable {
         }
     }
 
-            //TODO TAKE CARE OF THIS ONE
-    public void FilterAppointmentByWeek(ObservableList appointments){
-        LocalDate now = LocalDate.now();
-        LocalDate nowPlusWeek = now.plusWeeks(1);
 
-        FilteredList<Calendar> filteredList = new FilteredList<>(appointments);
-        filteredList.setPredicate(row -> {
-
-            LocalDate rowDate = LocalDate.parse((CharSequence) row.getStart(), dateTimeDTF);
-            return rowDate.isAfter(now.minusDays(1)) && rowDate.isBefore(nowPlusWeek);
-        });
-        tableCalendar.setItems(filteredList);
-    };
 
     public void weeklyCalendarFilter(javafx.event.ActionEvent event){
-        FilterAppointmentByWeek(list);
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime nowPlus7 = now.plusDays(7);
+        FilteredList<Calendar> filteredData = new FilteredList<>(list);
+        filteredData.setPredicate(row -> {
+            LocalDateTime rowDate = LocalDateTime.parse(row.getStart().toString(), dateTimeDTF);
+            return rowDate.isAfter(now.minusDays(1))&& rowDate.isBefore(nowPlus7);
+        });
+        tableCalendar.setItems(filteredData);
+    }
+
+    public void viewAllCalendar(javafx.event.ActionEvent event) throws SQLException {
+        populateTableView();
     }
 
 
 
 
+    public void monthlyCalendarFilter(javafx.event.ActionEvent event) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime nowPlusMonth = now.plusMonths(1);
+        FilteredList<Calendar> filteredData = new FilteredList<>(list);
+        filteredData.setPredicate(row -> {
+            LocalDateTime rowDate = LocalDateTime.parse(row.getStart().toString(), dateTimeDTF);
+            return rowDate.isAfter(now.minusDays(1)) && rowDate.isBefore(nowPlusMonth);
+        });
+        tableCalendar.setItems(filteredData);
+    }
 
 
     private void populateTableView() throws SQLException, NullPointerException {
