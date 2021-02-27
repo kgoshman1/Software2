@@ -19,6 +19,7 @@ import util.dbQuery;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.ResourceBundle;
 
@@ -120,8 +121,8 @@ public class Add_Appointment implements Initializable {
         String description = descriptionTF.getText();
         String location = locationTF.getText();
         String type = typeTF.getText() ;
-        Timestamp start = getCurrentTime();
-        Timestamp end = getCurrentTime();
+        Timestamp start = Timestamp.valueOf(startDateTF.getText());
+        Timestamp end = Timestamp.valueOf(endDateTF.getText());;
         int customerID = Integer.parseInt(customerIDTF.getText()) ;
         int userID = Integer.parseInt(userIDTF.getText());
 

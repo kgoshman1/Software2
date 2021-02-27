@@ -109,8 +109,8 @@ public class Modify_Appointment implements Initializable {
         String description = descriptionTF.getText();
         String location = locationTF.getText();
         String type = typeTF.getText() ;
-        Timestamp start = getCurrentTime();
-        Timestamp end = getCurrentTime();
+        Timestamp start = Timestamp.valueOf(startDateTF.getText());;
+        Timestamp end = Timestamp.valueOf(endDateTF.getText());;
         int customerID = Integer.parseInt(customerIDTF.getText()) ;
         int userID = Integer.parseInt(userIDTF.getText());
         String contactID = contactCB.getSelectionModel().getSelectedItem();
@@ -201,7 +201,6 @@ public class Modify_Appointment implements Initializable {
         } else if (calendar.getContact().equals("3")) {
             contactCB.setPromptText("Li Ling");
         }
-
     }
 
     public void deleteButton(javafx.event.ActionEvent event) throws SQLException {
