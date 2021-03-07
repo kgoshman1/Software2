@@ -19,8 +19,12 @@ import util.dbQuery;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Date;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 public class Modify_Appointment implements Initializable {
     @FXML
@@ -36,6 +40,14 @@ public class Modify_Appointment implements Initializable {
     @FXML TextField endDateTF;
     @FXML TextField customerIDTF;
     @FXML TextField userIDTF;
+
+    @FXML
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    @FXML
+
+    DateTimeFormatter dtf2 = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+    private final ZoneId localZone = ZoneId.systemDefault();
+
 
 
     @FXML private TableView<Calendar> tableCalendar;
@@ -73,10 +85,55 @@ public class Modify_Appointment implements Initializable {
         ResultSet rs = dbConnection.conn.createStatement().executeQuery(query);
 
         while (rs.next()) {
+//
+//            list.add(new Calendar(rs.getInt(1), rs.getString(2), rs.getString(3),
+//                    rs.getString(4), rs.getString(5), rs.getTimestamp(6).toInstant().atZone(ZoneId.systemDefault()),
+//                    rs.getTimestamp(7).toInstant().atZone(ZoneId.systemDefault()), rs.getInt(12),rs.getInt(13), rs.getString(14)));
 
-            list.add(new Calendar(rs.getInt(1), rs.getString(2), rs.getString(3),
-                    rs.getString(4), rs.getString(5), rs.getTimestamp(6),
-                    rs.getTimestamp(7), rs.getInt(12),rs.getInt(13), rs.getString(14)));
+
+            int a = rs.getInt(1);
+            String b = rs.getString(2);
+            String c = rs.getString(3);
+            String d = rs.getString(4);
+            String e = rs.getString(5);
+            Timestamp f = rs.getTimestamp(6);
+            Timestamp g = rs.getTimestamp(7);
+            int h = rs.getInt(12);
+            int i = rs.getInt(13);
+            String j = rs.getString(14);
+
+//            ZonedDateTime zonedDateTime = f.toLocalDateTime().atZone(ZoneId.systemDefault());
+//            ZonedDateTime zonedDateTime1 = g.toLocalDateTime().atZone(ZoneId.systemDefault());
+
+
+
+            ZoneId zoneId = ZoneId.of(TimeZone.getDefault().getID());
+
+
+            Instant instant = f.toInstant();
+            ZonedDateTime zonedDateTime = instant.atZone(zoneId);
+
+            Instant instant2 = g.toInstant();
+            ZonedDateTime zonedDateTime2 = instant2.atZone(zoneId);
+//
+//                ZonedDateTime zonedDateTime = f.toLocalDateTime().atZone(ZoneId.systemDefault());
+            ZonedDateTime zonedDateTime1 = g.toLocalDateTime().atZone(ZoneId.systemDefault());
+
+            LocalDate number1 = zonedDateTime.toLocalDate();
+            LocalTime number12 = zonedDateTime.toLocalTime();
+            String numberCombined = number1 + " " + number12;
+
+            LocalDate numberkk = zonedDateTime2.toLocalDate();
+            LocalTime number12333 = zonedDateTime2.toLocalTime();
+            String numberCombined3 = numberkk + " " + number12333;
+
+            //zonedDateTime.format(dateTimeDTF);
+            //zonedDateTime1.toInstant();
+            //System.out.println(zonedDateTime);
+
+
+
+            list.add(new Calendar(a,b,c,d,e,numberCombined,numberCombined3,h,i,j));
 
 
             tableCalendar.setItems(null);
@@ -104,13 +161,21 @@ public class Modify_Appointment implements Initializable {
         dbQuery.setPreparedStatement(dbConnection.conn, insertStatement, Statement.RETURN_GENERATED_KEYS);
         PreparedStatement ps = dbQuery.getPreparedStatement();
 
+        String ldtStart = startDateTF.getText();
+        LocalDateTime localDateTimeStart = LocalDateTime.parse(ldtStart, dtf);
+        ZonedDateTime zdt = localDateTimeStart.atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
+
+        String ldtEnd = endDateTF.getText();
+        LocalDateTime localDateTimeEnd = LocalDateTime.parse(ldtEnd, dtf);
+        ZonedDateTime zdtEnd = localDateTimeEnd.atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
+
 
         String title = titleTF.getText();
         String description = descriptionTF.getText();
         String location = locationTF.getText();
         String type = typeTF.getText() ;
-        Timestamp start = Timestamp.valueOf(startDateTF.getText());;
-        Timestamp end = Timestamp.valueOf(endDateTF.getText());;
+        Timestamp start = Timestamp.valueOf(zdt.toLocalDateTime());
+        Timestamp end = Timestamp.valueOf(zdtEnd.toLocalDateTime());
         int customerID = Integer.parseInt(customerIDTF.getText()) ;
         int userID = Integer.parseInt(userIDTF.getText());
         String contactID = contactCB.getSelectionModel().getSelectedItem();

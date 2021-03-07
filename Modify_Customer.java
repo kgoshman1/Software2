@@ -3,6 +3,7 @@ package view_controller;
 import com.sun.javafx.css.parser.Css2Bin;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -21,6 +22,8 @@ import view_controller.Add_Customer;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.ResourceBundle;
 import view_controller.Add_Customer;
@@ -98,9 +101,8 @@ public class Modify_Customer implements Initializable {
         colLastUpdate.setCellValueFactory(new PropertyValueFactory<>("lastUpdate")); //8
         colUpdatedBy.setCellValueFactory(new PropertyValueFactory<>("updatedBy")); //9
         colDivisionID.setCellValueFactory(new PropertyValueFactory<>("divisionID")); //10
-
-
     }
+
 
     public void modifyCustomer() throws SQLException {
 
@@ -118,7 +120,7 @@ public class Modify_Customer implements Initializable {
         String createdBy = "Script";
         Timestamp lastUpdate = getCurrentTime();
         String updatedBy =  "Script";
-        int divisionID = 60;
+        //int divisionID = 60;
 
         ps.setString(1, customerName);
         ps.setString(2, customerAddress);

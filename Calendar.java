@@ -1,9 +1,8 @@
 package model;
 
 import javafx.beans.property.*;
-import javafx.collections.ObservableList;
 
-import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 
 public class Calendar {
 
@@ -12,14 +11,14 @@ public class Calendar {
     private final StringProperty description;
     private final StringProperty location;
     private final StringProperty type;
-    private final ObjectProperty<Timestamp> start;
-    private final ObjectProperty<Timestamp> end;
+    private final ObjectProperty<String> start;
+    private final ObjectProperty<String> end;
     private final IntegerProperty customerID;
     private final IntegerProperty userID;
     private final StringProperty contact;
 
     public Calendar(int appointmentID, String title, String description, String location, String type,
-                    Timestamp start, Timestamp end, int customerID, int userID, String contact){
+                    String start, String end, int customerID, int userID, String contact){
         this.appointmentID = new SimpleIntegerProperty(appointmentID);
         this.title = new SimpleStringProperty(title);
         this.description = new SimpleStringProperty(description);
@@ -92,27 +91,27 @@ public class Calendar {
         this.type.set(type);
     }
 
-    public Timestamp getStart() {
+    public String getStart() {
         return start.get();
     }
 
-    public ObjectProperty<Timestamp> startProperty() {
+    public ObjectProperty<String> startProperty() {
         return start;
     }
 
-    public void setStart(Timestamp start) {
+    public void setStart(String start) {
         this.start.set(start);
     }
 
-    public Timestamp getEnd() {
+    public String getEnd() {
         return end.get();
     }
 
-    public ObjectProperty<Timestamp> endProperty() {
+    public ObjectProperty<String> endProperty() {
         return end;
     }
 
-    public void setEnd(Timestamp end) {
+    public void setEnd(String end) {
         this.end.set(end);
     }
 

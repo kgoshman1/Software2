@@ -1,19 +1,28 @@
 package view_controller;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.ResourceBundle;
 
-public class Reports {
+public class Reports implements Initializable {
 
-    @FXML
-    Button home;
+    @FXML ObservableList<String> Months = FXCollections.observableArrayList();
+    @FXML ComboBox<String> monthsCB;
+    @FXML Button home;
 
     public void mainMenu (javafx.event.ActionEvent event) throws IOException {
         Parent parent = FXMLLoader.load(getClass().getResource("Main_Menu.fxml"));
@@ -21,5 +30,30 @@ public class Reports {
         Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
         window.setScene(scene);
         window.show();
+    }
+
+    public void getMonthCB() throws SQLException {
+        Months.add("January");
+        Months.add("February");
+        Months.add("March");
+        Months.add("April");
+        Months.add("May");
+        Months.add("June");
+        Months.add("July");
+        Months.add("August");
+        Months.add("September");
+        Months.add("October");
+        Months.add("November");
+        Months.add("December");
+        monthsCB.setItems(Months);
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        try {
+            getMonthCB();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
