@@ -21,6 +21,7 @@ import java.net.URL;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.time.*;
+import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.ResourceBundle;
@@ -71,10 +72,11 @@ public class Add_Appointment implements Initializable {
     public ObservableList<String>contacts = FXCollections.observableArrayList();
 
     @FXML
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     @FXML
     private final ZoneId localZone = ZoneId.systemDefault();
 
+    public int valueCheck = 0;
 
 
     @Override
@@ -110,37 +112,16 @@ public class Add_Appointment implements Initializable {
             int h = rs.getInt(12);
             int i = rs.getInt(13);
             String j = rs.getString(14);
-//
-//            ZonedDateTime zonedDateTime = f.toLocalDateTime().atZone(ZoneId.systemDefault());
-//            ZonedDateTime zonedDateTime1 = g.toLocalDateTime().atZone(ZoneId.systemDefault());
 
 
-            ZoneId zoneId = ZoneId.of(TimeZone.getDefault().getID());
-
-
+            DateTimeFormatter formattedDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.from(ZoneOffset.UTC));
             Instant instant = f.toInstant();
-            ZonedDateTime zonedDateTime = instant.atZone(zoneId);
+            String outStart = formattedDateTime.format(instant);
 
-            Instant instant2 = g.toInstant();
-            ZonedDateTime zonedDateTime2 = instant2.atZone(zoneId);
-//
-//                ZonedDateTime zonedDateTime = f.toLocalDateTime().atZone(ZoneId.systemDefault());
-           // ZonedDateTime zonedDateTime1 = g.toLocalDateTime().atZone(ZoneId.systemDefault());
+            Instant instantEnd = g.toInstant();
+            String outEnd = formattedDateTime.format(instantEnd);
 
-            LocalDate number1 = zonedDateTime.toLocalDate();
-            LocalTime number12 = zonedDateTime.toLocalTime();
-            String numberCombined = number1 + " " + number12;
-
-            LocalDate numberkk = zonedDateTime2.toLocalDate();
-            LocalTime number12333 = zonedDateTime2.toLocalTime();
-            String numberCombined3 = numberkk + " " + number12333;
-
-            //zonedDateTime.format(dateTimeDTF);
-            //zonedDateTime1.toInstant();
-            //System.out.println(zonedDateTime);
-
-
-            list.add(new Calendar(a,b,c,d,e,numberCombined,numberCombined3,h,i,j));
+            list.add(new Calendar(a,b,c,d,e,outStart,outEnd,h,i,j));
 
 
             tableCalendar.setItems(null);
@@ -190,7 +171,6 @@ public class Add_Appointment implements Initializable {
 
 
 
-
         ps.setString(1, title); //2
         ps.setString(2, description); //3
         ps.setString(3, location); //4
@@ -232,12 +212,15 @@ public class Add_Appointment implements Initializable {
         String userID2 = userIDTF.getText();
 
 
-
+        checkAppointment();
 
         if (appointment2.equals("") || title2.equals("") || description2.equals("") || location2.equals("")
                 || type2.equals("") || start2.equals("") || end2.equals("") || customerID2.equals("")
-                || userID2.equals("")){
+                || userID2.equals("")) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "All fields must be filled out in order to save");
+            alert.showAndWait();
+        } else if (valueCheck == 1) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error, Already  a timescheudle");
             alert.showAndWait();
         } else {
 
@@ -252,6 +235,27 @@ public class Add_Appointment implements Initializable {
         }
     }
 
+    public void checkAppointment() throws SQLException {
+        String checkStatement = ("SELECT Start,End FROM appointments");
+
+        LocalDateTime timestampStart = LocalDateTime.parse(startDateTF.getText(),dtf);
+        LocalDateTime timestampEnd   = LocalDateTime.parse(endDateTF.getText(),dtf);
+
+        ResultSet rs = dbConnection.conn.createStatement().executeQuery(checkStatement);
+        while (rs.next()) {
+            Timestamp startName = rs.getTimestamp("Start");
+            Timestamp endName  = rs.getTimestamp("End");
+
+            if (startName.toLocalDateTime().isBefore(timestampStart) || (endName.toLocalDateTime()
+            .isAfter(timestampEnd))){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Error, Already  a timescheudle");
+                alert.showAndWait();
+                valueCheck = 1;
+                break;
+            }
+    }
+
+}
 
 
     public void addContacts(){

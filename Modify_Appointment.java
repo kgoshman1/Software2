@@ -42,13 +42,13 @@ public class Modify_Appointment implements Initializable {
     @FXML TextField userIDTF;
 
     @FXML
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     @FXML
 
     DateTimeFormatter dtf2 = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
     private final ZoneId localZone = ZoneId.systemDefault();
 
-
+    public int valueCheck = 0;
 
     @FXML private TableView<Calendar> tableCalendar;
     @FXML private TableColumn<Calendar, Integer> colAppt;
@@ -102,38 +102,14 @@ public class Modify_Appointment implements Initializable {
             int i = rs.getInt(13);
             String j = rs.getString(14);
 
-//            ZonedDateTime zonedDateTime = f.toLocalDateTime().atZone(ZoneId.systemDefault());
-//            ZonedDateTime zonedDateTime1 = g.toLocalDateTime().atZone(ZoneId.systemDefault());
-
-
-
-            ZoneId zoneId = ZoneId.of(TimeZone.getDefault().getID());
-
-
+            DateTimeFormatter formattedDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.from(ZoneOffset.UTC));
             Instant instant = f.toInstant();
-            ZonedDateTime zonedDateTime = instant.atZone(zoneId);
+            String outStart = formattedDateTime.format(instant);
 
-            Instant instant2 = g.toInstant();
-            ZonedDateTime zonedDateTime2 = instant2.atZone(zoneId);
-//
-//                ZonedDateTime zonedDateTime = f.toLocalDateTime().atZone(ZoneId.systemDefault());
-            ZonedDateTime zonedDateTime1 = g.toLocalDateTime().atZone(ZoneId.systemDefault());
+            Instant instantEnd = g.toInstant();
+            String outEnd = formattedDateTime.format(instantEnd);
 
-            LocalDate number1 = zonedDateTime.toLocalDate();
-            LocalTime number12 = zonedDateTime.toLocalTime();
-            String numberCombined = number1 + " " + number12;
-
-            LocalDate numberkk = zonedDateTime2.toLocalDate();
-            LocalTime number12333 = zonedDateTime2.toLocalTime();
-            String numberCombined3 = numberkk + " " + number12333;
-
-            //zonedDateTime.format(dateTimeDTF);
-            //zonedDateTime1.toInstant();
-            //System.out.println(zonedDateTime);
-
-
-
-            list.add(new Calendar(a,b,c,d,e,numberCombined,numberCombined3,h,i,j));
+            list.add(new Calendar(a,b,c,d,e,outStart,outEnd,h,i,j));
 
 
             tableCalendar.setItems(null);
@@ -173,7 +149,7 @@ public class Modify_Appointment implements Initializable {
         String title = titleTF.getText();
         String description = descriptionTF.getText();
         String location = locationTF.getText();
-        String type = typeTF.getText() ;
+        String type = typeTF.getText();
         Timestamp start = Timestamp.valueOf(zdt.toLocalDateTime());
         Timestamp end = Timestamp.valueOf(zdtEnd.toLocalDateTime());
         int customerID = Integer.parseInt(customerIDTF.getText()) ;
@@ -186,6 +162,9 @@ public class Modify_Appointment implements Initializable {
         ps.setString(2, description); //3
         ps.setString(3, location); //4
         ps.setString(4, type); //5
+
+
+
         ps.setTimestamp(5, start); //6
         ps.setTimestamp(6, end); //7
         ps.setTimestamp(7, getCurrentTime()); //8
@@ -212,6 +191,28 @@ public class Modify_Appointment implements Initializable {
         }
     }
 
+    public void checkAppointment() throws SQLException {
+        String checkStatement = ("SELECT Start,End FROM appointments");
+
+        LocalDateTime timestampStart = LocalDateTime.parse(startDateTF.getText(),dtf);
+        LocalDateTime timestampEnd   = LocalDateTime.parse(endDateTF.getText(),dtf);
+
+        ResultSet rs = dbConnection.conn.createStatement().executeQuery(checkStatement);
+        while (rs.next()) {
+            Timestamp startName = rs.getTimestamp("Start");
+            Timestamp endName  = rs.getTimestamp("End");
+
+            if (startName.toLocalDateTime().isBefore(timestampStart) || (endName.toLocalDateTime()
+                    .isAfter(timestampEnd))){
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Error, Already  a timescheudle");
+                alert.showAndWait();
+                valueCheck = 1;
+                break;
+            }
+        }
+    }
+
+
     public void saveButton(javafx.event.ActionEvent event) throws IOException, SQLException {
         String appointment2 = appointmentIDTF.getText();
         String title2 = titleTF.getText();
@@ -224,12 +225,15 @@ public class Modify_Appointment implements Initializable {
         String userID2 = userIDTF.getText();
 
 
-
+        checkAppointment();
 
         if (appointment2.equals("") || title2.equals("") || description2.equals("") || location2.equals("")
                 || type2.equals("") || start2.equals("") || end2.equals("") || customerID2.equals("")
-                || userID2.equals("")){
+                || userID2.equals("")) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "All fields must be filled out in order to save");
+            alert.showAndWait();
+        } else if (valueCheck == 1) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error, Already  a timescheudle");
             alert.showAndWait();
         } else {
 
