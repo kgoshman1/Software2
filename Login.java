@@ -1,6 +1,9 @@
 package view_controller;
 
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -9,9 +12,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import model.Calendar;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
@@ -30,7 +36,8 @@ public class Login implements Initializable {
     Label timeLabel;
     @FXML
     Label loginLabel;
-
+    @FXML private ObservableList<Calendar> list = FXCollections.observableArrayList();
+    @FXML private final DateTimeFormatter dateTimeDTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -55,6 +62,7 @@ public class Login implements Initializable {
             Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
             window.setScene(scene);
             window.show();
+
         }
             else {
                 alertRB();
@@ -79,5 +87,7 @@ public class Login implements Initializable {
             loginLabel.setText(rb.getString("loginLabel"));
         }
     }
+
+
 
 }

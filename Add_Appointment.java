@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
@@ -98,10 +99,6 @@ public class Add_Appointment implements Initializable {
 
         while (rs.next()) {
 
-//            list.add(new Calendar(rs.getInt(1), rs.getString(2), rs.getString(3),
-//                    rs.getString(4), rs.getString(5), ZonedDateTime.parse(rs.getString(6)).toInstant().atZone(ZoneId.systemDefault()),
-//                    ZonedDateTime.parse(rs.getString(7)).toInstant().atZone(ZoneId.systemDefault()), rs.getInt(12),rs.getInt(13), rs.getString(14)));
-
             int a = rs.getInt(1);
             String b = rs.getString(2);
             String c = rs.getString(3);
@@ -113,13 +110,24 @@ public class Add_Appointment implements Initializable {
             int i = rs.getInt(13);
             String j = rs.getString(14);
 
+            DateTimeFormatter formattedDateTimes = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            DateTimeFormatter formattedDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.s").withZone(ZoneId.systemDefault());
 
-            DateTimeFormatter formattedDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.from(ZoneOffset.UTC));
-            Instant instant = f.toInstant();
-            String outStart = formattedDateTime.format(instant);
+//            DateTimeFormatter formattedDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.from(ZoneOffset.UTC));
+//            Instant instant = f.toInstant();
+//            String outStart = formattedDateTime.format(instant);
+            String string = f.toString();
+            LocalDateTime localDateTimeStart = LocalDateTime.parse(string, formattedDateTime);
+            ZonedDateTime zdt = localDateTimeStart.atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.systemDefault());
+            String outStart = zdt.format(formattedDateTimes);
 
-            Instant instantEnd = g.toInstant();
-            String outEnd = formattedDateTime.format(instantEnd);
+            String strings = f.toString();
+            LocalDateTime localDateTimeStarts = LocalDateTime.parse(strings, formattedDateTime);
+            ZonedDateTime zdts = localDateTimeStarts.atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.systemDefault());
+            String outEnd = zdts.format(formattedDateTimes);
+
+//            Instant instantEnd = g.toInstant();
+//            String outEnd = formattedDateTime.format(instantEnd);
 
             list.add(new Calendar(a,b,c,d,e,outStart,outEnd,h,i,j));
 
@@ -158,7 +166,6 @@ public class Add_Appointment implements Initializable {
         LocalDateTime localDateTimeEnd = LocalDateTime.parse(ldtEnd, dtf);
         ZonedDateTime zdtEnd = localDateTimeEnd.atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
 
-
         String title = titleTF.getText();
         String description = descriptionTF.getText();
         String location = locationTF.getText();
@@ -167,8 +174,6 @@ public class Add_Appointment implements Initializable {
         Timestamp end = Timestamp.valueOf(zdtEnd.toLocalDateTime());
         int customerID = Integer.parseInt(customerIDTF.getText()) ;
         int userID = Integer.parseInt(userIDTF.getText());
-
-
 
 
         ps.setString(1, title); //2
@@ -200,6 +205,7 @@ public class Add_Appointment implements Initializable {
         }
     }
 
+
     public void saveButton(javafx.event.ActionEvent event) throws IOException, SQLException {
         String appointment2 = appointmentIDTF.getText();
         String title2 = titleTF.getText();
@@ -210,7 +216,6 @@ public class Add_Appointment implements Initializable {
         String end2 = endDateTF.getText();
         String customerID2 = customerIDTF.getText();
         String userID2 = userIDTF.getText();
-
 
         checkAppointment();
 
@@ -235,23 +240,25 @@ public class Add_Appointment implements Initializable {
         }
     }
 
+
+
+
     public void checkAppointment() throws SQLException {
         String checkStatement = ("SELECT Start,End FROM appointments");
 
         LocalDateTime timestampStart = LocalDateTime.parse(startDateTF.getText(),dtf);
         LocalDateTime timestampEnd   = LocalDateTime.parse(endDateTF.getText(),dtf);
 
+
         ResultSet rs = dbConnection.conn.createStatement().executeQuery(checkStatement);
         while (rs.next()) {
             Timestamp startName = rs.getTimestamp("Start");
             Timestamp endName  = rs.getTimestamp("End");
-
-            if (startName.toLocalDateTime().isBefore(timestampStart) || (endName.toLocalDateTime()
+            if (startName.toLocalDateTime().isBefore(timestampStart) && (endName.toLocalDateTime()
             .isAfter(timestampEnd))){
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "Error, Already  a timescheudle");
                 alert.showAndWait();
                 valueCheck = 1;
-                break;
             }
     }
 

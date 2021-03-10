@@ -40,13 +40,10 @@ public class Modify_Appointment implements Initializable {
     @FXML TextField endDateTF;
     @FXML TextField customerIDTF;
     @FXML TextField userIDTF;
-
-    @FXML
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    @FXML
-
-    DateTimeFormatter dtf2 = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+    @FXML DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    @FXML DateTimeFormatter dtf2 = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
     private final ZoneId localZone = ZoneId.systemDefault();
+    private final DateTimeFormatter dateTimeDTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public int valueCheck = 0;
 
@@ -65,6 +62,7 @@ public class Modify_Appointment implements Initializable {
     @FXML public ObservableList<Calendar> list = FXCollections.observableArrayList();
 
     @FXML ObservableList<String> contacts = FXCollections.observableArrayList();
+
     @FXML ComboBox<String> contactCB;
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -85,11 +83,6 @@ public class Modify_Appointment implements Initializable {
         ResultSet rs = dbConnection.conn.createStatement().executeQuery(query);
 
         while (rs.next()) {
-//
-//            list.add(new Calendar(rs.getInt(1), rs.getString(2), rs.getString(3),
-//                    rs.getString(4), rs.getString(5), rs.getTimestamp(6).toInstant().atZone(ZoneId.systemDefault()),
-//                    rs.getTimestamp(7).toInstant().atZone(ZoneId.systemDefault()), rs.getInt(12),rs.getInt(13), rs.getString(14)));
-
 
             int a = rs.getInt(1);
             String b = rs.getString(2);
@@ -102,12 +95,19 @@ public class Modify_Appointment implements Initializable {
             int i = rs.getInt(13);
             String j = rs.getString(14);
 
-            DateTimeFormatter formattedDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.from(ZoneOffset.UTC));
-            Instant instant = f.toInstant();
-            String outStart = formattedDateTime.format(instant);
+            DateTimeFormatter formattedDateTimes = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            DateTimeFormatter formattedDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.s").withZone(ZoneId.systemDefault());
 
-            Instant instantEnd = g.toInstant();
-            String outEnd = formattedDateTime.format(instantEnd);
+
+            String string = f.toString();
+            LocalDateTime localDateTimeStart = LocalDateTime.parse(string, formattedDateTime);
+            ZonedDateTime zdt = localDateTimeStart.atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.systemDefault());
+            String outStart = zdt.format(formattedDateTimes);
+
+            String strings = f.toString();
+            LocalDateTime localDateTimeStarts = LocalDateTime.parse(strings, formattedDateTime);
+            ZonedDateTime zdts = localDateTimeStarts.atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.systemDefault());
+            String outEnd = zdts.format(formattedDateTimes);
 
             list.add(new Calendar(a,b,c,d,e,outStart,outEnd,h,i,j));
 
@@ -162,9 +162,6 @@ public class Modify_Appointment implements Initializable {
         ps.setString(2, description); //3
         ps.setString(3, location); //4
         ps.setString(4, type); //5
-
-
-
         ps.setTimestamp(5, start); //6
         ps.setTimestamp(6, end); //7
         ps.setTimestamp(7, getCurrentTime()); //8
@@ -202,12 +199,11 @@ public class Modify_Appointment implements Initializable {
             Timestamp startName = rs.getTimestamp("Start");
             Timestamp endName  = rs.getTimestamp("End");
 
-            if (startName.toLocalDateTime().isBefore(timestampStart) || (endName.toLocalDateTime()
+            if (startName.toLocalDateTime().isBefore(timestampStart) && (endName.toLocalDateTime()
                     .isAfter(timestampEnd))){
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Error, Already  a timescheudle");
                 alert.showAndWait();
                 valueCheck = 1;
-                break;
             }
         }
     }
@@ -298,8 +294,6 @@ public class Modify_Appointment implements Initializable {
             e.printStackTrace();
         }
     }
-
-
 
     public void addContacts(){
         contacts.add("Anika Costa");
