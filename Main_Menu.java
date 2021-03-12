@@ -1,7 +1,6 @@
 package view_controller;
 
 
-import com.sun.webkit.LoadListenerClient;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -26,13 +25,14 @@ import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.format.FormatStyle;
 import java.util.Optional;
 import java.util.ResourceBundle;
-
 
 
 public class Main_Menu implements Initializable {
@@ -103,8 +103,7 @@ public class Main_Menu implements Initializable {
         });
 
         if (filteredData.isEmpty()) {
-            System.out.println(filteredData);
-            System.out.println("No Apptointments");
+            System.out.println("No Appointments");
         } else {
 //            String title = filteredData.get(0).getTitle();
 //            String descrip = filteredData.get(0).getDescription();

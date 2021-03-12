@@ -77,7 +77,7 @@ public class Add_Appointment implements Initializable {
     @FXML
     private final ZoneId localZone = ZoneId.systemDefault();
 
-    public int valueCheck = 0;
+    public boolean valueCheck = false;
 
 
     @Override
@@ -113,21 +113,16 @@ public class Add_Appointment implements Initializable {
             DateTimeFormatter formattedDateTimes = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             DateTimeFormatter formattedDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.s").withZone(ZoneId.systemDefault());
 
-//            DateTimeFormatter formattedDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.from(ZoneOffset.UTC));
-//            Instant instant = f.toInstant();
-//            String outStart = formattedDateTime.format(instant);
             String string = f.toString();
             LocalDateTime localDateTimeStart = LocalDateTime.parse(string, formattedDateTime);
             ZonedDateTime zdt = localDateTimeStart.atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.systemDefault());
             String outStart = zdt.format(formattedDateTimes);
 
-            String strings = f.toString();
+            String strings = g.toString();
             LocalDateTime localDateTimeStarts = LocalDateTime.parse(strings, formattedDateTime);
             ZonedDateTime zdts = localDateTimeStarts.atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.systemDefault());
             String outEnd = zdts.format(formattedDateTimes);
 
-//            Instant instantEnd = g.toInstant();
-//            String outEnd = formattedDateTime.format(instantEnd);
 
             list.add(new Calendar(a,b,c,d,e,outStart,outEnd,h,i,j));
 
@@ -224,11 +219,10 @@ public class Add_Appointment implements Initializable {
                 || userID2.equals("")) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "All fields must be filled out in order to save");
             alert.showAndWait();
-        } else if (valueCheck == 1) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Error, Already  a timescheudle");
-            alert.showAndWait();
+        } else if (valueCheck == true) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Error, There is Already an appointment scheduled during this time");
+                alert.showAndWait();
         } else {
-
             addAppointment();
 
             Parent parent = FXMLLoader.load(getClass().getResource("Main_Menu.fxml"));
@@ -241,28 +235,36 @@ public class Add_Appointment implements Initializable {
     }
 
 
-
-
     public void checkAppointment() throws SQLException {
         String checkStatement = ("SELECT Start,End FROM appointments");
+        
+        String ldtStart = startDateTF.getText();
+        ZonedDateTime zdt = LocalDateTime.parse(ldtStart,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
+        String zdts = zdt.toLocalDateTime().format(dtf);
 
-        LocalDateTime timestampStart = LocalDateTime.parse(startDateTF.getText(),dtf);
-        LocalDateTime timestampEnd   = LocalDateTime.parse(endDateTF.getText(),dtf);
+
+        String ldtEnd = endDateTF.getText();
+
+        ZonedDateTime zdtEnd = LocalDateTime.parse(ldtEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
+        String zdtEnds = zdtEnd.toLocalDateTime().format(dtf);
 
 
         ResultSet rs = dbConnection.conn.createStatement().executeQuery(checkStatement);
         while (rs.next()) {
-            Timestamp startName = rs.getTimestamp("Start");
-            Timestamp endName  = rs.getTimestamp("End");
-            if (startName.toLocalDateTime().isBefore(timestampStart) && (endName.toLocalDateTime()
-            .isAfter(timestampEnd))){
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Error, Already  a timescheudle");
-                alert.showAndWait();
-                valueCheck = 1;
-            }
-    }
 
-}
+            Timestamp startName = rs.getTimestamp("Start");
+            Timestamp endName = rs.getTimestamp("End");
+
+            if (startName.toLocalDateTime().isBefore(LocalDateTime.parse(zdtEnds, dtf)) && (LocalDateTime.parse(zdts, dtf)
+                    .isBefore(ChronoLocalDateTime.from(endName.toLocalDateTime())))) {
+                valueCheck = true;
+
+            } else if (startName.toLocalDateTime().isBefore(LocalDateTime.parse(zdtEnds, dtf)) && (LocalDateTime.parse(zdts, dtf)
+                    .isBefore(ChronoLocalDateTime.from(endName.toLocalDateTime())))) {
+                valueCheck = true;
+            }
+        }
+    }
 
 
     public void addContacts(){
