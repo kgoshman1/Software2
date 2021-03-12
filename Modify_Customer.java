@@ -541,31 +541,40 @@ public class Modify_Customer implements Initializable {
     public void deleteButton(javafx.event.ActionEvent event) throws SQLException {
         Customer customer = tableCustomer.getItems().get(tableCustomer.getSelectionModel().getSelectedIndex());
 
-        try{
+        try {
+            PreparedStatement ps1 = dbConnection.conn.prepareStatement("DELETE FROM appointments WHERE " +
+                    "Customer_ID = ?");
             PreparedStatement ps = dbConnection.conn.prepareStatement("DELETE FROM customers WHERE " +
                     "Customer_ID = ?");
+            ps1.setInt(1, customer.getCustomerID());
             ps.setInt(1, customer.getCustomerID());
-            int result = ps.executeUpdate();
+            ps1.executeUpdate();
+            ps.executeUpdate();
 
-            if (ps.getUpdateCount() > 0) {
+            if (ps1.getUpdateCount() > 0) {
                 System.out.println(ps.getUpdateCount() + " row(s) affected");
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "You have successfully deleted this customer");
                 alert.showAndWait();
 
-                Parent parent = FXMLLoader.load(getClass().getResource("Main_Menu.fxml"));
-                Scene scene = new Scene(parent);
-                Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                window.setScene(scene);
-                window.show();
-            } else {
-                System.out.println("No change!");
+                if (ps.getUpdateCount() > 0) {
+                    System.out.println(ps.getUpdateCount() + " row(s) affected");
+                    Alert alerts = new Alert(Alert.AlertType.INFORMATION, "You have successfully deleted this customer");
+                    alerts.showAndWait();
+
+                    Parent parent = FXMLLoader.load(getClass().getResource("Main_Menu.fxml"));
+                    Scene scene = new Scene(parent);
+                    Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    window.setScene(scene);
+                    window.show();
+
+                }
             }
-        } catch (SQLException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    /** Populates States ComboBox with state data */
+        /** Populates States ComboBox with state data */
     public void getStateCBUS() throws SQLException {
         Statement statement = dbConnection.conn.createStatement();
         ResultSet rs = statement.executeQuery("SELECT * FROM first_level_divisions LIMIT 51");
@@ -639,3 +648,4 @@ public class Modify_Customer implements Initializable {
         window.show();
     }
 }
+

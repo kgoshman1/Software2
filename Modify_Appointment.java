@@ -213,10 +213,6 @@ public class Modify_Appointment implements Initializable {
             if (startName.toLocalDateTime().isBefore(LocalDateTime.parse(zdtEnds, dtf)) && (LocalDateTime.parse(zdts, dtf)
                     .isBefore(ChronoLocalDateTime.from(endName.toLocalDateTime())))) {
                 valueCheck = true;
-
-            } else if (startName.toLocalDateTime().isBefore(LocalDateTime.parse(zdtEnds, dtf)) && (LocalDateTime.parse(zdts, dtf)
-                    .isBefore(ChronoLocalDateTime.from(endName.toLocalDateTime())))) {
-                valueCheck = true;
             }
         }
     }

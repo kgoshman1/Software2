@@ -25,6 +25,7 @@ import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 
@@ -212,16 +213,38 @@ public class Add_Appointment implements Initializable {
         String customerID2 = customerIDTF.getText();
         String userID2 = userIDTF.getText();
 
+        DateTimeFormatter formattedDateTimes = DateTimeFormatter.ofPattern("HH:mm");
+
+        String ldtStart = startDateTF.getText();
+        ZonedDateTime zdt = LocalDateTime.parse(ldtStart,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
+        String zdts = zdt.toLocalDateTime().format(formattedDateTimes);
+
+        String ldtEnd = endDateTF.getText();
+        ZonedDateTime zdtEnd = LocalDateTime.parse(ldtEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
+        String zdtEnds = zdtEnd.toLocalTime().format(formattedDateTimes);
+
+        String s = "03:00";
+        LocalTime startName = LocalTime.parse(s);
+
+        String e = "13:00";
+        LocalTime endName = LocalTime.parse(e);
+
         checkAppointment();
+
+
 
         if (appointment2.equals("") || title2.equals("") || description2.equals("") || location2.equals("")
                 || type2.equals("") || start2.equals("") || end2.equals("") || customerID2.equals("")
                 || userID2.equals("")) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "All fields must be filled out in order to save");
             alert.showAndWait();
-        } else if (valueCheck == true) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Error, There is Already an appointment scheduled during this time");
-                alert.showAndWait();
+        } else if (valueCheck) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error, There is Already an appointment scheduled during this time");
+            alert.showAndWait();
+        } else if (startName.isBefore(LocalTime.parse(zdtEnds)) && (LocalTime.parse(zdts)
+                .isBefore(endName))){
+            Alert alert = new Alert(Alert.AlertType.ERROR, "You can book appointments from 8AM - 11PM only");
+            alert.showAndWait();
         } else {
             addAppointment();
 
@@ -237,14 +260,12 @@ public class Add_Appointment implements Initializable {
 
     public void checkAppointment() throws SQLException {
         String checkStatement = ("SELECT Start,End FROM appointments");
-        
+
         String ldtStart = startDateTF.getText();
         ZonedDateTime zdt = LocalDateTime.parse(ldtStart,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
         String zdts = zdt.toLocalDateTime().format(dtf);
 
-
         String ldtEnd = endDateTF.getText();
-
         ZonedDateTime zdtEnd = LocalDateTime.parse(ldtEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
         String zdtEnds = zdtEnd.toLocalDateTime().format(dtf);
 
@@ -265,6 +286,7 @@ public class Add_Appointment implements Initializable {
             }
         }
     }
+
 
 
     public void addContacts(){
