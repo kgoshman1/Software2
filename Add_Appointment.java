@@ -15,19 +15,14 @@ import model.Calendar;
 import util.dbConnection;
 import util.dbQuery;
 
-
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.Formatter;
 import java.util.ResourceBundle;
-import java.util.TimeZone;
 
 public class Add_Appointment implements Initializable {
     @FXML
@@ -46,38 +41,22 @@ public class Add_Appointment implements Initializable {
     @FXML TextField userIDTF;
     @FXML ComboBox<String> contactCB;
 
-    @FXML
-    private TableView<Calendar> tableCalendar;
-    @FXML
-    private TableColumn<Calendar, Integer> colAppt;
-    @FXML
-    private TableColumn<Calendar, String> colTitle;
-    @FXML
-    private TableColumn<Calendar, Integer> colDescription;
-    @FXML
-    private TableColumn<Calendar, Double> colLocation;
-    @FXML
-    private TableColumn<Calendar, Integer> colType;
-    @FXML
-    private TableColumn<Calendar, Integer> colStart;
-    @FXML
-    private TableColumn<Calendar, Integer> colEnd;
-    @FXML
-    private TableColumn<Calendar, Integer> colID;
-    @FXML
-    private TableColumn<Calendar, Integer> colUserID;
-    @FXML
-    private TableColumn<Calendar, String > colContact;
+    @FXML private TableView<Calendar> tableCalendar;
+    @FXML private TableColumn<Calendar, Integer> colAppt;
+    @FXML private TableColumn<Calendar, String> colTitle;
+    @FXML private TableColumn<Calendar, Integer> colDescription;
+    @FXML private TableColumn<Calendar, Double> colLocation;
+    @FXML private TableColumn<Calendar, Integer> colType;
+    @FXML private TableColumn<Calendar, Integer> colStart;
+    @FXML private TableColumn<Calendar, Integer> colEnd;
+    @FXML private TableColumn<Calendar, Integer> colID;
+    @FXML private TableColumn<Calendar, Integer> colUserID;
+    @FXML private TableColumn<Calendar, String > colContact;
+    @FXML public ObservableList<Calendar> list = FXCollections.observableArrayList();
+    @FXML public ObservableList<String>contacts = FXCollections.observableArrayList();
 
-    @FXML
-    public ObservableList<Calendar> list = FXCollections.observableArrayList();
-    public ObservableList<String>contacts = FXCollections.observableArrayList();
-
-    @FXML
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    @FXML
-    private final ZoneId localZone = ZoneId.systemDefault();
-
+    @FXML DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    @FXML private final ZoneId localZone = ZoneId.systemDefault();
     public boolean valueCheck = false;
 
 
@@ -91,13 +70,14 @@ public class Add_Appointment implements Initializable {
         }
     }
 
-
+    /** Method to populate the tableview. */
     private void populateTableView() throws SQLException, NullPointerException {
         list = FXCollections.observableArrayList();
 
         String query = "SELECT * FROM appointments";
         ResultSet rs = dbConnection.conn.createStatement().executeQuery(query);
 
+        //While another database record exists, continues to query data.
         while (rs.next()) {
 
             int a = rs.getInt(1);
@@ -111,23 +91,26 @@ public class Add_Appointment implements Initializable {
             int i = rs.getInt(13);
             String j = rs.getString(14);
 
+            //Various formatters for date display
             DateTimeFormatter formattedDateTimes = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             DateTimeFormatter formattedDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.s").withZone(ZoneId.systemDefault());
 
+            //UTC to System time zone conversion
             String string = f.toString();
             LocalDateTime localDateTimeStart = LocalDateTime.parse(string, formattedDateTime);
             ZonedDateTime zdt = localDateTimeStart.atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.systemDefault());
             String outStart = zdt.format(formattedDateTimes);
 
+            //UTC to System time zone conersion
             String strings = g.toString();
             LocalDateTime localDateTimeStarts = LocalDateTime.parse(strings, formattedDateTime);
             ZonedDateTime zdts = localDateTimeStarts.atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.systemDefault());
             String outEnd = zdts.format(formattedDateTimes);
 
-
+            //Adds info to list to be set and displayed
             list.add(new Calendar(a,b,c,d,e,outStart,outEnd,h,i,j));
 
-
+            //Sets tablecalendar tableivew to display queried information
             tableCalendar.setItems(null);
             tableCalendar.setItems(list);
         }
@@ -144,7 +127,7 @@ public class Add_Appointment implements Initializable {
 
     }
 
-
+    /** Method to add an appointment and update database. */
     public void addAppointment() throws SQLException {
 
         String insertStatement = ("INSERT INTO appointments(Title, Description, Location, Type, Start, End," +
@@ -153,15 +136,17 @@ public class Add_Appointment implements Initializable {
         dbQuery.setPreparedStatement(dbConnection.conn, insertStatement, Statement.RETURN_GENERATED_KEYS);
         PreparedStatement ps = dbQuery.getPreparedStatement();
 
-
+        //User input conversion to UTC Time
         String ldtStart = startDateTF.getText();
         LocalDateTime localDateTimeStart = LocalDateTime.parse(ldtStart, dtf);
         ZonedDateTime zdt = localDateTimeStart.atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
 
+        //User input conversion to UTC Time
         String ldtEnd = endDateTF.getText();
         LocalDateTime localDateTimeEnd = LocalDateTime.parse(ldtEnd, dtf);
         ZonedDateTime zdtEnd = localDateTimeEnd.atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
 
+        //Saves user input to variables
         String title = titleTF.getText();
         String description = descriptionTF.getText();
         String location = locationTF.getText();
@@ -171,7 +156,7 @@ public class Add_Appointment implements Initializable {
         int customerID = Integer.parseInt(customerIDTF.getText()) ;
         int userID = Integer.parseInt(userIDTF.getText());
 
-
+        //Sets prepared statement info for database operations
         ps.setString(1, title); //2
         ps.setString(2, description); //3
         ps.setString(3, location); //4
@@ -201,7 +186,7 @@ public class Add_Appointment implements Initializable {
         }
     }
 
-
+    /** Method to qualify and save user input for adding an appointment. */
     public void saveButton(javafx.event.ActionEvent event) throws IOException, SQLException {
         String appointment2 = appointmentIDTF.getText();
         String title2 = titleTF.getText();
@@ -215,24 +200,37 @@ public class Add_Appointment implements Initializable {
 
         DateTimeFormatter formattedDateTimes = DateTimeFormatter.ofPattern("HH:mm");
 
+        //Convert local time to UTC time (unique formatter)
         String ldtStart = startDateTF.getText();
-        ZonedDateTime zdt = LocalDateTime.parse(ldtStart,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
-        String zdts = zdt.toLocalDateTime().format(formattedDateTimes);
+        LocalDateTime localDateTimeStart = LocalDateTime.parse(ldtStart, dtf);
+        ZonedDateTime zdt = localDateTimeStart.atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
+
 
         String ldtEnd = endDateTF.getText();
-        ZonedDateTime zdtEnd = LocalDateTime.parse(ldtEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
-        String zdtEnds = zdtEnd.toLocalTime().format(formattedDateTimes);
+        LocalDateTime localDateTimeEnd = LocalDateTime.parse(ldtEnd, dtf);
+        ZonedDateTime zdtEnd = localDateTimeEnd.atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
 
+        //Convert local time to UTC time (unique formatter)
+        String ldtStarts = startDateTF.getText();
+        ZonedDateTime zdtt = LocalDateTime.parse(ldtStarts,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
+        String zdts = zdtt.toLocalDateTime().format(formattedDateTimes);
+
+        String ldtEnds = endDateTF.getText();
+        ZonedDateTime zdtEndt = LocalDateTime.parse(ldtEnds, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
+        String zdtEnds = zdtEndt.toLocalTime().format(formattedDateTimes);
+
+        //UTC representation of business opening hours Eastern Time
         String s = "03:00";
         LocalTime startName = LocalTime.parse(s);
 
+        //UTC representation of business closing hours Eastern Time
         String e = "13:00";
         LocalTime endName = LocalTime.parse(e);
 
+
         checkAppointment();
 
-
-
+        //Qualifies information so that it conforms to required constraints
         if (appointment2.equals("") || title2.equals("") || description2.equals("") || location2.equals("")
                 || type2.equals("") || start2.equals("") || end2.equals("") || customerID2.equals("")
                 || userID2.equals("")) {
@@ -244,6 +242,10 @@ public class Add_Appointment implements Initializable {
         } else if (startName.isBefore(LocalTime.parse(zdtEnds)) && (LocalTime.parse(zdts)
                 .isBefore(endName))){
             Alert alert = new Alert(Alert.AlertType.ERROR, "You can book appointments from 8AM - 11PM only");
+            alert.showAndWait();
+        } else if (zdt.getDayOfWeek() == DayOfWeek.SATURDAY || zdt.getDayOfWeek() == DayOfWeek.SUNDAY || zdtEnd.
+        getDayOfWeek() == DayOfWeek.SATURDAY || zdtEnd.getDayOfWeek() == DayOfWeek.SUNDAY){
+            Alert alert = new Alert(Alert.AlertType.ERROR, "You can book appointments Monday - Friday only");
             alert.showAndWait();
         } else {
             addAppointment();
@@ -257,14 +259,16 @@ public class Add_Appointment implements Initializable {
         }
     }
 
-
+    /** Method to prevent overlapping apointments. */
     public void checkAppointment() throws SQLException {
         String checkStatement = ("SELECT Start,End FROM appointments");
 
+        //Local to UTC Time
         String ldtStart = startDateTF.getText();
         ZonedDateTime zdt = LocalDateTime.parse(ldtStart,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
         String zdts = zdt.toLocalDateTime().format(dtf);
 
+        //Local to UTC time
         String ldtEnd = endDateTF.getText();
         ZonedDateTime zdtEnd = LocalDateTime.parse(ldtEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
         String zdtEnds = zdtEnd.toLocalDateTime().format(dtf);
@@ -276,11 +280,8 @@ public class Add_Appointment implements Initializable {
             Timestamp startName = rs.getTimestamp("Start");
             Timestamp endName = rs.getTimestamp("End");
 
+            //Determines if appointments are overlapping
             if (startName.toLocalDateTime().isBefore(LocalDateTime.parse(zdtEnds, dtf)) && (LocalDateTime.parse(zdts, dtf)
-                    .isBefore(ChronoLocalDateTime.from(endName.toLocalDateTime())))) {
-                valueCheck = true;
-
-            } else if (startName.toLocalDateTime().isBefore(LocalDateTime.parse(zdtEnds, dtf)) && (LocalDateTime.parse(zdts, dtf)
                     .isBefore(ChronoLocalDateTime.from(endName.toLocalDateTime())))) {
                 valueCheck = true;
             }
@@ -288,13 +289,12 @@ public class Add_Appointment implements Initializable {
     }
 
 
-
+    /** Adds Contacts to contact list. */
     public void addContacts(){
 
         contacts.add("Anika Costa");
         contacts.add("Daniel Garcia");
         contacts.add("Li Lee");
-
         contactCB.setItems(contacts);
     }
 
@@ -305,7 +305,7 @@ public class Add_Appointment implements Initializable {
             return new Timestamp(date.getTime());
         }
 
-                    /** Takes user to Main Menu Screen */
+        /** Takes user to Main Menu Screen */
         public void mainMenu (javafx.event.ActionEvent event) throws IOException {
             Parent parent = FXMLLoader.load(getClass().getResource("Main_Menu.fxml"));
             Scene scene = new Scene(parent);

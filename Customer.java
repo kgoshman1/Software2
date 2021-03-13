@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ResourceBundle;
 
-/** Customer Class */
+            /** Customer Class. */
 public class Customer implements Initializable {
     private final IntegerProperty customerID;
     private final StringProperty customersName;
@@ -21,7 +21,7 @@ public class Customer implements Initializable {
     private final StringProperty updatedBy;
     private final IntegerProperty divisionID;
 
-
+            /** Customer Constractor. */
     public Customer(int customerID, String customersName, String customerAddress, String customerZip, String customerPhone,
                     Timestamp customerCreatedDate,String createdBy, Timestamp lastUpdate, String updatedBy,
                     int divisionID ){

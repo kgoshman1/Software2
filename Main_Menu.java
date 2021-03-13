@@ -63,7 +63,7 @@ public class Main_Menu implements Initializable {
         }
     }
 
-
+    /** Filter appointments based on week. */
     public void weeklyCalendarFilter(javafx.event.ActionEvent event){
 
         LocalDateTime now = LocalDateTime.now();
@@ -80,7 +80,7 @@ public class Main_Menu implements Initializable {
         populateTableView();
     }
 
-
+    /** Filter appointments based on month. */
     public void monthlyCalendarFilter(javafx.event.ActionEvent event) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime nowPlusMonth = now.plusMonths(1);
@@ -92,6 +92,7 @@ public class Main_Menu implements Initializable {
         tableCalendar.setItems(filteredData);
     }
 
+    /** Alerts user of appointment if exists within 15 minutes of login. */
     public void loginAlert(){
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime startTime = LocalDateTime.now().plusMinutes(15);
@@ -116,7 +117,7 @@ public class Main_Menu implements Initializable {
     }
 
 
-
+    /* Query Database and displays tableview information. */
     private void populateTableView() throws SQLException, NullPointerException, DateTimeParseException {
 
         list = FXCollections.observableArrayList();

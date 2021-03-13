@@ -12,20 +12,16 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.Calendar;
-import model.Customer;
 import util.dbConnection;
 import util.dbQuery;
-
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.time.*;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.Date;
 import java.util.ResourceBundle;
-import java.util.TimeZone;
 
 public class Modify_Appointment implements Initializable {
     @FXML
@@ -42,9 +38,7 @@ public class Modify_Appointment implements Initializable {
     @FXML TextField customerIDTF;
     @FXML TextField userIDTF;
     @FXML DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    @FXML DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-ddHH:mm");
     private final ZoneId localZone = ZoneId.systemDefault();
-    private final DateTimeFormatter dateTimeDTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.s");
 
     public boolean valueCheck = false;
 
@@ -75,8 +69,7 @@ public class Modify_Appointment implements Initializable {
         }
     }
 
-
-
+    /** Query Database and populate tableview with results. */
     private void populateTableView() throws SQLException, NullPointerException {
         list = FXCollections.observableArrayList();
 
@@ -130,6 +123,7 @@ public class Modify_Appointment implements Initializable {
 
     }
 
+    /** Updates database to reflect updated changes to an appointment. */
     public void updateAppointment() throws SQLException {
 
         String insertStatement = ("UPDATE appointments SET Title = ?, Description = ?, Location = ?, Type = ?, Start = ?, " +
@@ -190,6 +184,7 @@ public class Modify_Appointment implements Initializable {
         }
     }
 
+    /** Determines if appointments overlap */
     public void checkAppointment() throws SQLException {
         String checkStatement = ("SELECT Start,End FROM appointments");
 
@@ -220,7 +215,7 @@ public class Modify_Appointment implements Initializable {
 
 
 
-
+    /** Qualifies and saves user appointments. */
     public void saveButton(javafx.event.ActionEvent event) throws IOException, SQLException {
         String appointment2 = appointmentIDTF.getText();
         String title2 = titleTF.getText();
@@ -233,6 +228,33 @@ public class Modify_Appointment implements Initializable {
         String userID2 = userIDTF.getText();
 
 
+
+        DateTimeFormatter formattedDateTimes = DateTimeFormatter.ofPattern("HH:mm");
+
+        String ldtStart = startDateTF.getText();
+        LocalDateTime localDateTimeStart = LocalDateTime.parse(ldtStart, dtf);
+        ZonedDateTime zdt = localDateTimeStart.atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
+
+        String ldtEnd = endDateTF.getText();
+        LocalDateTime localDateTimeEnd = LocalDateTime.parse(ldtEnd, dtf);
+        ZonedDateTime zdtEnd = localDateTimeEnd.atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
+
+
+
+        String ldtStarts = startDateTF.getText();
+        ZonedDateTime zdtt = LocalDateTime.parse(ldtStarts,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
+        String zdts = zdtt.toLocalDateTime().format(formattedDateTimes);
+
+        String ldtEnds = endDateTF.getText();
+        ZonedDateTime zdtEndt = LocalDateTime.parse(ldtEnds, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).atZone(localZone).withZoneSameInstant(ZoneId.of("UTC"));
+        String zdtEnds = zdtEndt.toLocalTime().format(formattedDateTimes);
+
+        String s = "03:00";
+        LocalTime startName = LocalTime.parse(s);
+
+        String e = "13:00";
+        LocalTime endName = LocalTime.parse(e);
+
         checkAppointment();
 
 
@@ -242,9 +264,16 @@ public class Modify_Appointment implements Initializable {
             Alert alert = new Alert(Alert.AlertType.ERROR, "All fields must be filled out in order to save");
             alert.showAndWait();
         } else if (valueCheck == true) {
-            Alert alert = new Alert(Alert.AlertType.ERROR,"This appointment slot is already taken");
+            Alert alert = new Alert(Alert.AlertType.ERROR, "This appointment slot is already taken");
             alert.showAndWait();
-
+        } else if (startName.isBefore(LocalTime.parse(zdtEnds)) && (LocalTime.parse(zdts)
+                .isBefore(endName))){
+            Alert alert = new Alert(Alert.AlertType.ERROR, "You can book appointments from 8AM - 11PM only");
+            alert.showAndWait();
+        } else if (zdt.getDayOfWeek() == DayOfWeek.SATURDAY || zdt.getDayOfWeek() == DayOfWeek.SUNDAY || zdtEnd.
+                getDayOfWeek() == DayOfWeek.SATURDAY || zdtEnd.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "You can book appointments Monday - Friday only");
+            alert.showAndWait();
         } else {
 
             updateAppointment();
@@ -258,6 +287,7 @@ public class Modify_Appointment implements Initializable {
         }
     }
 
+    /** Populates text fields with selected row. */
     public void selectButton(javafx.event.ActionEvent event) throws SQLException {
 
         Calendar calendar = tableCalendar.getItems().get(tableCalendar.getSelectionModel().getSelectedIndex());
@@ -282,6 +312,7 @@ public class Modify_Appointment implements Initializable {
         }
     }
 
+    /** Deletes selected row from database. */
     public void deleteButton(javafx.event.ActionEvent event) throws SQLException {
         Calendar calendar = tableCalendar.getItems().get(tableCalendar.getSelectionModel().getSelectedIndex());
 
@@ -309,6 +340,7 @@ public class Modify_Appointment implements Initializable {
         }
     }
 
+    /** Adds and displays contacts list. */
     public void addContacts(){
         contacts.add("Anika Costa");
         contacts.add("Daniel Garcia");

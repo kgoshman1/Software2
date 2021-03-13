@@ -1,9 +1,7 @@
 package view_controller;
 
-import com.sun.javafx.css.parser.Css2Bin;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -13,20 +11,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import jdk.jfr.StackTrace;
-import model.Calendar;
 import model.Customer;
 import util.dbConnection;
 import util.dbQuery;
-import view_controller.Add_Customer;
+
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.ResourceBundle;
-import view_controller.Add_Customer;
 
 public class Modify_Customer implements Initializable {
     @FXML private TableView<Customer> tableCustomer;
@@ -57,13 +50,6 @@ public class Modify_Customer implements Initializable {
     @FXML ObservableList<String> States = FXCollections.observableArrayList();
     @FXML ObservableList<String> Provinces = FXCollections.observableArrayList();
     @FXML ObservableList<String> Territories = FXCollections.observableArrayList();
-
-
-
-
-    @FXML public static int customerToModify;
-
-
     @FXML private int id;
 
     @Override
@@ -76,6 +62,7 @@ public class Modify_Customer implements Initializable {
         }
     }
 
+    /** Populates tableview with database information. */
     private void populateTableView() throws SQLException, NullPointerException {
         list = FXCollections.observableArrayList();
 
@@ -103,7 +90,7 @@ public class Modify_Customer implements Initializable {
         colDivisionID.setCellValueFactory(new PropertyValueFactory<>("divisionID")); //10
     }
 
-
+    /** Updates customer info in database. */
     public void modifyCustomer() throws SQLException {
 
         String insertStatement = ("UPDATE customers SET Customer_Name = ?, Address = ?, Postal_Code = ?, Phone = ?, Create_Date = ?, Created_By = ?, Last_Update = ?, Last_Updated_By = ?, Division_ID = ? " +
@@ -288,7 +275,7 @@ public class Modify_Customer implements Initializable {
 
 
 
-        // Saves user data after updating customer
+    /** Saves user data after updating customer. */
     public void saveButton(javafx.event.ActionEvent event) throws IOException, SQLException {
         String nameTF2 = nameTF.getText();
         String addressTF2 = addressTF.getText();
@@ -313,6 +300,7 @@ public class Modify_Customer implements Initializable {
         }
     }
 
+    /** Populates textfields with selected row information. */
     public void selectButton(javafx.event.ActionEvent event) throws SQLException {
         Customer customer = tableCustomer.getItems().get(tableCustomer.getSelectionModel().getSelectedIndex());
 
@@ -538,6 +526,7 @@ public class Modify_Customer implements Initializable {
 
 
 
+    /** Deletes selected row from the database. */
     public void deleteButton(javafx.event.ActionEvent event) throws SQLException {
         Customer customer = tableCustomer.getItems().get(tableCustomer.getSelectionModel().getSelectedIndex());
 
@@ -574,7 +563,7 @@ public class Modify_Customer implements Initializable {
         }
     }
 
-        /** Populates States ComboBox with state data */
+    /** Adds and displays U.S. States when "US" Country filter is applied. */
     public void getStateCBUS() throws SQLException {
         Statement statement = dbConnection.conn.createStatement();
         ResultSet rs = statement.executeQuery("SELECT * FROM first_level_divisions LIMIT 51");
@@ -585,6 +574,7 @@ public class Modify_Customer implements Initializable {
         }
     }
 
+    /** Adds and displays Canadian Provinces when "Canadian" Country filter is applied. */
     public void getStateCBCA() throws NullPointerException, SQLException {
         try {
             Statement statement = dbConnection.conn.createStatement();
@@ -598,6 +588,7 @@ public class Modify_Customer implements Initializable {
         }
     }
 
+    /** Adds and displays UK Territories when "UK" Country filter is applied. */
     public void getStateCBUK() throws NullPointerException, SQLException {
         try {
             Statement statement = dbConnection.conn.createStatement();
@@ -611,6 +602,7 @@ public class Modify_Customer implements Initializable {
         }
     }
 
+    /** Filters "state/territory/province" depending upon country chosen. */
     public void checkCountry(javafx.event.ActionEvent event) throws SQLException {
 
         if (countryCB.getSelectionModel().getSelectedItem().equals("United States")){

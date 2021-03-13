@@ -15,13 +15,11 @@ import model.Customer;
 import util.dbConnection;
 import util.dbQuery;
 
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.util.Date;
 import java.util.ResourceBundle;
-import java.sql.PreparedStatement;
 
 
 public class Add_Customer implements Initializable {
@@ -96,7 +94,7 @@ public class Add_Customer implements Initializable {
             colDivisionID.setCellValueFactory(new PropertyValueFactory<>("divisionID")); //10
         }
 
-
+    /** Method to add a new customer to database. */
     public void addCustomer() throws SQLException {
 
         String insertStatement = ("INSERT INTO customers(Customer_Name, Address, Postal_Code, Phone, Create_Date, Created_By, Last_Update, Last_Updated_By, Division_ID) VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
@@ -122,7 +120,7 @@ public class Add_Customer implements Initializable {
         ps.setString(6, createdBy);
         ps.setTimestamp(7, lastUpdate);
         ps.setString(8, updatedBy);
-        //ps.setInt(9, divisionID);
+
         if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Alabama")) {
             ps.setInt(9, 1);
         } else if (countryCB.getValue().equals("United States") && stateCB.getValue().equals("Arizona")) {
@@ -275,7 +273,7 @@ public class Add_Customer implements Initializable {
         }
     }
 
-
+    /** Method to qualify and save new customer. */
     public void saveButton(javafx.event.ActionEvent event) throws IOException, SQLException {
         String nameTF2 = nameTF.getText();
         String addressTF2 = addressTF.getText();
@@ -284,7 +282,7 @@ public class Add_Customer implements Initializable {
         boolean countryCB2 = countryCB.getSelectionModel().isEmpty();
         boolean stateCB2 = stateCB.getSelectionModel().isEmpty();
 
-
+        //If fields are empty, alerts
         if (nameTF2.equals("") || addressTF2.equals("") || zipTF2.equals("") || phoneTF2.equals("") || countryCB2 || stateCB2) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "All fields must be filled out in order to save");
             alert.showAndWait();
@@ -300,7 +298,7 @@ public class Add_Customer implements Initializable {
         }
     }
 
-
+    /** Adds and displays U.S. States when "US" Country filter is applied. */
     public void getStateCBUS() throws NullPointerException, SQLException {
         try {
             Statement statement = dbConnection.conn.createStatement();
@@ -314,6 +312,7 @@ public class Add_Customer implements Initializable {
         }
     }
 
+    /** Adds and displays Canadian Provinces when "Canadian" Country filter is applied. */
     public void getStateCBCA() throws NullPointerException, SQLException {
         try {
             Statement statement = dbConnection.conn.createStatement();
@@ -327,6 +326,7 @@ public class Add_Customer implements Initializable {
         }
     }
 
+    /** Adds and displays UK Territories when "UK" Country filter is applied. */
     public void getStateCBUK() throws NullPointerException, SQLException {
         try {
             Statement statement = dbConnection.conn.createStatement();
@@ -340,6 +340,7 @@ public class Add_Customer implements Initializable {
         }
     }
 
+    /** Filters "state/territory/province" depending upon country chosen. */
     public void checkCountry(javafx.event.ActionEvent event) throws SQLException {
 
         if (countryCB.getSelectionModel().getSelectedItem().equals("United States")){
@@ -354,6 +355,7 @@ public class Add_Customer implements Initializable {
         }
     }
 
+    /** Adds countries to list and displays. */
     public void getCountryCB() throws SQLException {
         Countries.add("United States");
         Countries.add("Canada");

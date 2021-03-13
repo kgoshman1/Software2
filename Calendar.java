@@ -17,6 +17,7 @@ public class Calendar {
     private final IntegerProperty userID;
     private final StringProperty contact;
 
+                 /** Calendar Constructor. */
     public Calendar(int appointmentID, String title, String description, String location, String type,
                     String start, String end, int customerID, int userID, String contact){
         this.appointmentID = new SimpleIntegerProperty(appointmentID);
@@ -31,6 +32,7 @@ public class Calendar {
         this.contact = new SimpleStringProperty(contact);
     }
 
+                /** Calendar Getters and Setters. */
     public int getAppointmentID() {
         return appointmentID.get();
     }
