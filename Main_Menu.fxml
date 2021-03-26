@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="600.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view_controller.Main_Menu">
+   <children>
+      <VBox alignment="TOP_CENTER" layoutX="46.0" layoutY="121.0" prefHeight="120.0" prefWidth="100.0" spacing="30.0">
+         <children>
+            <RadioButton fx:id="allRadio" mnemonicParsing="false" onAction="#viewAllCalendar" prefHeight="18.0" prefWidth="104.0" selected="true" text="View All">
+               <toggleGroup>
+                  <ToggleGroup fx:id="calendarView" />
+               </toggleGroup></RadioButton>
+            <RadioButton fx:id="weeklyRadio" mnemonicParsing="false" onAction="#weeklyCalendarFilter" prefHeight="18.0" prefWidth="101.0" text="Weekly View" toggleGroup="$calendarView" />
+            <RadioButton fx:id="monthlyView" mnemonicParsing="false" onAction="#monthlyCalendarFilter" prefHeight="18.0" prefWidth="99.0" text="Monthly View" toggleGroup="$calendarView" />
+         </children>
+      </VBox>
+      <TableView fx:id="tableCalendar" layoutX="188.0" layoutY="71.0" prefHeight="525.0" prefWidth="999.0">
+        <columns>
+          <TableColumn fx:id="colAppt" prefWidth="78.0" text="Appt. #" />
+            <TableColumn fx:id="colTitle" prefWidth="98.0" text="Title" />
+            <TableColumn fx:id="colDescription" prefWidth="90.0" text="Description" />
+            <TableColumn fx:id="colLocation" prefWidth="103.0" text="Location" />
+            <TableColumn fx:id="colType" prefWidth="121.0" text="Type" />
+            <TableColumn fx:id="colStart" prefWidth="210.0" text="Start" />
+            <TableColumn fx:id="colEnd" prefWidth="211.0" text="End" />
+            <TableColumn fx:id="colID" prefWidth="81.0" text="Customer ID" />
+        </columns>
+      </TableView>
+      <VBox alignment="TOP_CENTER" layoutX="29.0" layoutY="309.0" prefHeight="263.0" prefWidth="133.0" spacing="30.0">
+         <children>
+            <Button fx:id="reportsButton" mnemonicParsing="false" onAction="#displayReports" prefHeight="27.0" prefWidth="126.0" style="-fx-background-radius: 75;" text="Reports" />
+            <Button fx:id="addCustomerButton" mnemonicParsing="false" onAction="#addCustomer" prefHeight="28.0" prefWidth="125.0" style="-fx-background-radius: 75;" text="Add Customer" />
+            <Button fx:id="modifyCustomerButton" mnemonicParsing="false" onAction="#modifyCustomer" prefHeight="27.0" prefWidth="122.0" style="-fx-background-radius: 75;" text="Modify Customer" />
+            <Button fx:id="addApptButton" mnemonicParsing="false" onAction="#addAppointment" prefHeight="27.0" prefWidth="130.0" style="-fx-background-radius: 75;" text="Add Appointment" />
+            <Button fx:id="modifyApptButton" mnemonicParsing="false" onAction="#modifyAppointment" style="-fx-background-radius: 75;" text="Modify Appointment" />
+         </children>
+      </VBox>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="229.0" layoutY="14.0" prefHeight="43.0" prefWidth="483.0" text="Main Menu">
+         <font>
+            <Font size="33.0" />
+         </font>
+      </Label>
+      <Separator layoutX="14.0" layoutY="253.0" prefHeight="12.0" prefWidth="164.0" />
+      <Separator layoutX="16.0" layoutY="67.0" prefHeight="4.0" prefWidth="164.0" />
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="28.0" layoutY="81.0" prefHeight="20.0" prefWidth="141.0" text="Calendar Views">
+         <font>
+            <Font name="DIN Alternate Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="16.0" layoutY="265.0" prefHeight="34.0" prefWidth="164.0" text="Calendar Options">
+         <font>
+            <Font name="DIN Alternate Bold" size="18.0" />
+         </font>
+      </Label>
+      <Button fx:id="exitButton" layoutX="10.0" layoutY="14.0" mnemonicParsing="false" onAction="#exitButton" opacity="0.79" prefHeight="34.0" prefWidth="38.0" style="-fx-background-radius: 100;" text="Exit">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>

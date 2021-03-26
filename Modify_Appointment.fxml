@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="530.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view_controller.Modify_Appointment">
+   <children>
+      <Button fx:id="home" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#mainMenu" style="-fx-background-radius: 100;" text="Home" />
+      <VBox layoutX="29.0" layoutY="297.0" prefHeight="195.0" prefWidth="184.0" spacing="15.0">
+         <children>
+            <TextField fx:id="startDateTF" alignment="CENTER" promptText="Start Date/Time" />
+            <TextField fx:id="endDateTF" alignment="CENTER" promptText="End Date/Time" />
+            <TextField fx:id="customerIDTF" alignment="CENTER" promptText="Customer ID" />
+            <TextField fx:id="userIDTF" alignment="CENTER" promptText="User ID" />
+            <ComboBox fx:id="contactCB" prefWidth="150.0" promptText="Contacts" />
+         </children>
+      </VBox>
+      <VBox layoutX="29.0" layoutY="83.0" prefHeight="177.0" prefWidth="184.0" spacing="15.0">
+         <children>
+            <TextField fx:id="appointmentIDTF" alignment="CENTER" editable="false" promptText="Appointment ID - Auto Gen">
+               <font>
+                  <Font name="Apple Chancery" size="13.0" />
+               </font></TextField>
+            <TextField fx:id="titleTF" alignment="CENTER" promptText="Title" />
+            <TextField fx:id="descriptionTF" alignment="CENTER" promptText="Description" />
+            <TextField fx:id="locationTF" alignment="CENTER" promptText="Location" />
+            <TextField fx:id="typeTF" alignment="CENTER" promptText="Type" />
+         </children>
+      </VBox>
+      <Label layoutX="373.0" layoutY="28.0" prefHeight="40.0" prefWidth="156.0" text="Modify Appointment">
+         <font>
+            <Font name="DIN Alternate Bold" size="18.0" />
+         </font>
+      </Label>
+      <TableView fx:id="tableCalendar" layoutX="232.0" layoutY="81.0" prefHeight="408.0" prefWidth="940.0">
+        <columns>
+            <TableColumn fx:id="colAppt" prefWidth="75.0" text="Appt #" />
+            <TableColumn fx:id="colTitle" prefWidth="75.0" text="Title" />
+            <TableColumn fx:id="colDescription" prefWidth="75.0" text="Description" />
+          <TableColumn fx:id="colLocation" prefWidth="75.0" text="Location" />
+          <TableColumn fx:id="colType" prefWidth="75.0" text="Type" />
+            <TableColumn fx:id="colStart" prefWidth="172.0" text="Start" />
+            <TableColumn fx:id="colEnd" prefWidth="164.0" text="End" />
+            <TableColumn fx:id="colCustID" prefWidth="76.0" text="Cust. ID" />
+            <TableColumn fx:id="colUserID" prefWidth="84.0" text="User ID" />
+            <TableColumn fx:id="colContact" prefWidth="68.0" text="Contact" />
+        </columns>
+      </TableView>
+      <Button layoutX="29.0" layoutY="499.0" mnemonicParsing="false" onAction="#deleteButton" prefHeight="27.0" prefWidth="55.0" text="Delete" />
+      <Button layoutX="108.0" layoutY="499.0" mnemonicParsing="false" onAction="#saveButton" prefHeight="21.0" prefWidth="55.0" text="Save" />
+      <Button layoutX="242.0" layoutY="499.0" mnemonicParsing="false" onAction="#selectButton" text="Select" />
+   </children>
+</AnchorPane>
